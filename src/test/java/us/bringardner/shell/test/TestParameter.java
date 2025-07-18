@@ -1,0 +1,611 @@
+package us.bringardner.shell.test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.Test;
+
+import us.bringardner.shell.Console;
+import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.FileSourceShPreProcessorVisitorImpl;
+
+public class TestParameter {
+
+	@Test
+	public void testParameter01() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("name", "tony");
+		String expect = "hello tony";
+		String code = "hello ${name-unset}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);
+		
+	}
+	
+	@Test
+	public void testParameter02() {
+		ShellContext ctx = new ShellContext(new Console());
+		//ctx.setVariable("name", "tony");
+		String expect = "hello unset";
+		String code = "hello ${name-unset}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);
+		
+	}
+	@Test
+	public void testParameter03() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("name", "tony");
+		String expect = "hello tony";
+		String code = "hello ${name:-unset}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);
+		
+	}
+	
+	@Test
+	public void testParameter04() {
+		ShellContext ctx = new ShellContext(new Console());
+		//ctx.setVariable("name", "tony");
+		String expect = "hello unset";
+		String code = "hello ${name:-unset}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter05() {
+		ShellContext ctx = new ShellContext(new Console());
+		//ctx.setVariable("name", "tony");
+		String expect = "hello tony";
+		String code = "hello ${name:=tony}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+		String val = ""+ctx.getVariable("name");
+		assertEquals("tony", val);
+	}
+	
+	@Test
+	public void testParameter06() {
+		ShellContext ctx = new ShellContext(new Console());
+		int exitCode=0;		
+		ByteArrayOutputStream bao = new ByteArrayOutputStream();
+		ByteArrayOutputStream bae = new ByteArrayOutputStream();			
+		PrintStream stdout= System.out;
+		PrintStream stderr= System.err;
+		InputStream stdin = System.in;
+		
+		System.setOut(new PrintStream(bao));
+		System.setErr(new PrintStream(bae));
+		System.setIn(new ByteArrayInputStream("".getBytes()));
+		
+		String code = "echo hello ${name:?bad stuff is happending}";
+		exitCode= ctx.console.executeUsingAntlr(code);
+		System.setIn(stdin);
+		System.setOut(stdout);
+		System.setErr(stderr);
+		
+		
+		//ctx.setVariable("name", "tony");
+		String expect = "hello null\n";
+		
+		String err = new String(bae.toByteArray());
+		String out = new String(bao.toByteArray());
+		//System.out.println("err = "+err);
+		//System.out.println("out = "+out);
+		assertEquals(expect, out);
+		assertEquals("bad stuff is happending\n", err);
+		assertEquals(0, exitCode);
+	}
+	
+	@Test
+	public void testParameter07() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "7890abcdefgh";
+		String code = "${string:7}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+		
+	}
+	
+	@Test
+	public void testParameter08() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "";
+		String code = "${string:7:0}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+		
+	}
+	@Test
+	public void testParameter09() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "78";
+		String code = "${string:7:2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+		
+	}
+	@Test
+	public void testParameter10() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "7890abcdef";
+		String code = "${string:7:-2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+		
+	}
+	
+	@Test
+	public void testParameter11() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "bcdefgh";
+		String code = "${string: -7}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter12() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "";
+		String code = "${string: -7:0}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter13() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "bc";
+		String code = "${string: -7:2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter14() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		String expect = "bcdef";
+		String code = "${string: -7:-2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter15() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("array",0, "01234567890abcdefgh");
+		String expect = "bc";
+		String code = "${array[0]: -7:2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter16() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("array",0, "01234567890abcdefgh");
+		String expect = "bcdef";
+		String code = "${array[0]: -7:-2}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter17() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "tony\n";
+		String code = ""
+				+ "d=tony\n"
+				+ "declare -A array=( \n"
+				+ "\n"
+				+ "[0]=\"Messi\"\n"
+				+ "\n"
+				+ " [Brazil]=$d\n"
+				+ "\n"
+				+ " [England]=\"Rooney\"\n"
+				+ "\n"
+				+ ")\n"
+				+ "echo ${array[Brazil]}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter18() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "7 8 9 0 a b c d e f g h\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]:7}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter19() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "7 8\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]:7:2}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter20() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "b c\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]: -7:2}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter21() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "java.lang.RuntimeException: -2: substring expression < 0\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]: -7:-2}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bae.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter22() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]:0}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter23() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "0 1\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]:0:2}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter24() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "\n";
+		String code = ""
+				+ "array = (0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)\n"
+				+ "echo ${array[@]: -7:0}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter25() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "var1 var2 var3\n";
+		String code = ""
+				+ "var1=1\n"
+				+ "var2=2\n"
+				+ "var3=3\n"
+				+ "echo ${!var*}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter26() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18\n";
+		String code = "array=(0 1 2 3 4 5 6 7 8 9 0 a b c d e f g h)"
+				+ "echo ${!array[*]}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter27() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "0\n";
+		String code = ""
+				+ "echo ${!array[*]}\n";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter28() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "22\n";
+		String code = "array=(0 1 2 3 4 5 6 7 8 9 0 a b b b b c d e f g h)\n"				
+				+ "echo ${#array[@]}\n"
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter29() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "5\n";
+		String code = "var=\"hello\"\n"				
+				+ "echo ${#var}\n"
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter30() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "resolv.conf\n";
+		String code = "var=\"/etc/resolv.conf\"\n"
+				+ "echo ${var#/etc/}\n"
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter31() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "/dns.measurement-factory.com/tools/dnstop/src/dnstop-20090128.tar.gz\n"
+				+ "dnstop-20090128.tar.gz\n";
+		String code = "_version=\"20090128\"\n"
+				+ "_url=\"http://dns.measurement-factory.com/tools/dnstop/src/dnstop-${_version}.tar.gz\"\n"
+				+ "echo \"${_url#*/}\"\n"
+				+ "echo \"${_url##*/}\"\n"
+				
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter32() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "_one two\n";
+		String code = "array=(tony_one tonytwo)\n"				
+				+ "echo ${array[@]#tony}\n"
+				;
+
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter33() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "xcache\n";
+		String code = "FILE=xcache.tar.gz\n"
+				+ "echo ${FILE%.tar.gz}"
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter34() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "hello:world:of\n"
+				+ "hello\n";
+		String code = "a='hello:world:of:tomorrow'\n"
+				+ "echo \"${a%:*}\"\n"
+				+ "echo \"${a%%:*}\"\n"
+				
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter35() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "hello_world_of\n"
+				+ "hello\n";
+		String code = "a='hello_world_of_tomorrow'\n"
+				+ "echo \"${a%_*}\"\n"
+				+ "echo \"${a%%_*}\"\n"
+				
+				+ "";
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter36() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "hello_world_of\n"
+				+ "hello\n";
+		String code = "array=(hello_world_of_tomorrow)\n"				
+				+ "echo ${array[@]%_*}\n"
+				+ "echo ${array[@]%%_*}\n"
+				;
+
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+	
+	@Test
+	public void testParameter37() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "linux is great. Use unix or die or kill unix\n"
+				+ "linux is great. Use linux or die or kill linux\n"
+				+ "linux is great. Use unix or die or kill unix\n"
+				+ "unix is great. Use unix or die or kill linux\n"
+				+ "linux\n"
+				+ "linux is great. Use unix or die or kill unix\n"
+				+ "linux is great. Use linux or die or kill linux\n"
+				
+				;
+		String code = "x=\"unix is great. Use unix or die or kill unix\"\n"
+				+ "echo ${x/unix/linux}\n"
+				+ "echo ${x//unix/linux}\n"
+				+ "echo ${x/#unix/linux}\n"
+				+ "echo ${x/%unix/linux}\n"
+				+ "echo ${x/un*x/linux}\n"
+				+ "echo ${x/un?x/linux}\n"
+				+ "echo ${x//un[a-z]x/linux}\n"
+				;
+
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+
+	@Test
+	public void testParameter38() {
+		AbstractConsoleTest.console = new Console();
+		
+		String expect = "Tony\n"
+				+ "TONY\n"
+				+ "Hi, tony\n"
+				+ "Hi, Tony\n"
+				+ "Hi, TONY\n"
+				+ "path: every good boy does fine\n"
+				+ "tONY\n"
+				
+				;
+		String code = "name=\"tony\"\n"
+				+ "echo \"${name^}\" \n"
+				+ "# Turn to uppercase\n"
+				+ "echo \"${name^^}\" \n"
+				+ "echo \"Hi, $name\"\n"
+				+ "echo \"Hi, ${name^}\"\n"
+				+ "echo \"Hi, ${name^^}\"\n"
+				+ "# Convert everything to lowercase \n"
+				+ "saying=\"EveRy Good boy DOes fine\"\n"
+				+ "echo \"path: ${saying,,}\"\n"
+				+ "# Convert only first character to lowercase \n"
+				+ "name=\"TONY\"\n"
+				+ "echo \"${name,}\"\n"
+				+ ""
+				;
+
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actual = new String(res.bao.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);		
+	}
+
+}

@@ -1,0 +1,172 @@
+package us.bringardner.shell.test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+
+import us.bringardner.shell.Console;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+
+
+@TestMethodOrder(OrderAnnotation.class)
+public class TestExecutionForStatement {
+
+	public static class ExecuteResult {
+		int exitCode=0;		
+		ByteArrayOutputStream bao = new ByteArrayOutputStream();
+		ByteArrayOutputStream bae = new ByteArrayOutputStream();			
+	}
+	
+	public static ExecuteResult executeCommand(String command,String stdIn) {
+		PrintStream stdout= System.out;
+		PrintStream stderr= System.err;
+		InputStream stdin = System.in;
+		
+		ExecuteResult ret = new ExecuteResult();
+		System.setOut(new PrintStream(ret.bao));
+		System.setErr(new PrintStream(ret.bae));
+		System.setIn(new ByteArrayInputStream(stdIn.getBytes()));
+		Console console = new Console();
+		ret.exitCode=console.executeUsingAntlr(command);
+		System.setIn(stdin);
+		System.setOut(stdout);
+		System.setErr(stderr);
+		
+		if( ret.bae.size()!=0) {
+			//System.out.println(new String(ret.bae.toByteArray()));
+		}
+		return ret;
+	}
+
+	@Test
+	public void testForStatent01_1() throws Exception{
+		String cmd = 
+				 "for i in 1 2 3; do\n"
+				 + "	echo \"i=$i\"\n"
+				 + "done"
+				;
+
+		String expect = 
+				"i=1\n"
+				+ "i=2\n"
+				+ "i=3\n"
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+
+	@Test
+	public void testForStatent02_1() throws Exception{
+		String cmd = 
+				 "for i in {1..3}; do\n"
+				 + "  echo \"Outer loop: $i\"\n"
+				 + "  for j in {1..3}; do \n"
+				 + "    if [ $j -eq 2 ]; then\n"
+				 + "      continue 2\n"
+				 + "    fi\n"
+				 + "    echo \"    Inner loop: $j\"\n"
+				 + "  done\n"
+				 + "done"
+				;
+		
+		String expect = 
+				"Outer loop: 1\n"
+				+ "    Inner loop: 1\n"
+				+ "Outer loop: 2\n"
+				+ "    Inner loop: 1\n"
+				+ "Outer loop: 3\n"
+				+ "    Inner loop: 1\n"
+				+ ""
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+	
+	@Test
+	public void testForStatent02_2() throws Exception{
+		String cmd = 
+				 "for i in {1..3}; do\n"
+				 + "  echo \"Outer loop: $i\"\n"
+				 + "  for j in {1..3}; do \n"
+				 + "    if [ $j -eq 2 ]; then\n"
+				 + "      continue\n"
+				 + "    fi\n"
+				 + "    echo \"    Inner loop: $j\"\n"
+				 + "  done\n"
+				 + "done"
+				;
+		
+		String expect = 
+				"Outer loop: 1\n"
+				+ "    Inner loop: 1\n"
+				+ "    Inner loop: 3\n"
+				+ "Outer loop: 2\n"
+				+ "    Inner loop: 1\n"
+				+ "    Inner loop: 3\n"
+				+ "Outer loop: 3\n"
+				+ "    Inner loop: 1\n"
+				+ "    Inner loop: 3\n"
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+
+	@Test
+	public void testForStatent02_3() throws Exception{
+		String cmd = 
+				 "for i in {1..3}; do\n"
+				 + "  echo \"Outer loop: $i\"\n"
+				 + "  for j in {1..3}; do \n"
+				 + "    if [ $j -eq 2 ]; then\n"
+				 + "      break\n"
+				 + "    fi\n"
+				 + "    echo \"    Inner loop: $j\"\n"
+				 + "  done\n"
+				 + "done"
+				;
+		
+		String expect = 
+				"Outer loop: 1\n"
+				+ "    Inner loop: 1\n"
+				+ "Outer loop: 2\n"
+				+ "    Inner loop: 1\n"
+				+ "Outer loop: 3\n"
+				+ "    Inner loop: 1\n"
+				+ ""
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+
+}

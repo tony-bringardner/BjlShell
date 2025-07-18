@@ -1,0 +1,2 @@
+#!fssh
+echo hello $1

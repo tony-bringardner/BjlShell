@@ -1,0 +1,7 @@
+function fun() {
+	echo $1
+	echo two
+}
+
+fun one
+fun two
