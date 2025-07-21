@@ -13,7 +13,6 @@ import org.antlr.v4.runtime.Recognizer;
 
 import us.bringardner.filesource.sh.FileSourceShLexer;
 import us.bringardner.filesource.sh.FileSourceShParser;
-import us.bringardner.filesource.sh.FileSourceShParserBaseVisitor;
 import us.bringardner.filesource.sh.FileSourceShParser.ArgumentContext;
 import us.bringardner.filesource.sh.FileSourceShParser.AssignStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.BackgroundCommandContext;
@@ -48,6 +47,7 @@ import us.bringardner.filesource.sh.FileSourceShParser.TermContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Until_statementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.VariableContext;
 import us.bringardner.filesource.sh.FileSourceShParser.WhileStatementContext;
+import us.bringardner.filesource.sh.FileSourceShParserBaseVisitor;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.statement.AssignStatement;
@@ -155,14 +155,14 @@ public class FileSourceShVisitorImpl extends FileSourceShParserBaseVisitor<Objec
 
 		return ret;
 	}
-/*
+	/*
 
 backgroundCommand:
 				statement_group AMP
 				| pipeStatement AMP
 				| commandStatement AMP
 				;
- */
+	 */
 	@Override
 	public BackgroundStatement visitBackgroundCommand(BackgroundCommandContext ctx) {
 		Statement stmt = null;
@@ -175,10 +175,10 @@ backgroundCommand:
 		} else {
 			throw new RuntimeException("No known background statement ");
 		}
-		
+
 		return new BackgroundStatement(ctx,stmt);
 	}
-	
+
 	@Override
 	public Statement visitCompareStatement(CompareStatementContext ctx) {
 		Compare compare = new Compare(ctx.compare());
@@ -212,7 +212,7 @@ backgroundCommand:
 			throw new RuntimeException("No option in pipable");
 		}		
 	}
-	
+
 	@Override
 	public CommandStatement visitCommandStatement(CommandStatementContext ctx) {
 		/*
@@ -223,7 +223,7 @@ commandStatement
     ;
 		 */
 		CommandStatement ret = new CommandStatement(ctx);	
-		
+
 		String name = visitCommand(ctx.command());
 		ret.setName(name);
 		if( ctx.argument()!=null) {
@@ -253,8 +253,8 @@ commandStatement
 				ret.setFileAddress(ctx.redirect1.file_address());
 			}
 		}
-		
-		
+
+
 		return ret;
 	}
 
@@ -270,7 +270,7 @@ assignStatement
 
 	 */
 	@Override
-	public Statement visitAssignStatement(AssignStatementContext ctx) {
+	public AssignStatement visitAssignStatement(AssignStatementContext ctx) {
 		AssignStatement ret = new AssignStatement(ctx);
 
 		return ret;
@@ -282,7 +282,7 @@ assignStatement
 pipeStatement
     : TIME? parg=argument? NOT? commandStatement (pipeOp commandStatement)+
     ;
-    
+
 pipeOp:
 	PIPE AMP?
 	;    	 */
@@ -294,7 +294,7 @@ pipeOp:
 				throw new RuntimeException("Invalid pipe argument "+tmp);
 			}
 		}
-		
+
 		boolean doTime = ctx.TIME()!=null;
 		String [] ops = new String[ctx.pipeOp().size()];
 		for (int idx = 0; idx < ops.length; idx++) {
@@ -302,17 +302,17 @@ pipeOp:
 			String opS = op.getText();
 			ops[idx] = opS;
 		}
-		
-		
+
+
 		Statement[] stmts = new CommandStatement[ctx.pipeableStatement().size()];
 		for (int idx = 0; idx < stmts.length; idx++) {
 			stmts[idx] = visitPipeableStatement(ctx.pipeableStatement(idx));
 		}
-		
+
 		if( ops.length != stmts.length-1) {
 			throw new RuntimeException("Invaid pipstatement. wrong numebr of ops="+ops.length+" should be "+(stmts.length-1));
 		}
-		
+
 		return new PipeStatement(ctx,doTime,stmts,ops);
 	}
 
@@ -478,23 +478,36 @@ forStatement
 	@Override
 	public Statement visitForStatement(ForStatementContext ctx) {
 		ForStatement ret = new ForStatement(ctx);
-
-		ret.setVarName(ctx.ID().getText());
+		if( ctx.for_loop_control() !=null ) {
+			Compare fc =visitCompare(ctx.for_loop_control().for_compare().compare());
+			ret.setLoopControl(
+					visitAssignStatement(ctx.for_loop_control().assignStatement()),
+					fc,
+					visitExpression(ctx.for_loop_control().expression())
+					);
+		} else if( ctx.ID() !=null){
+			ret.setVarName(ctx.ID().getText());
+		} else {
+			throw new RuntimeException("Invalid for statement");
+		}
 		List<Argument> args = new ArrayList<>();
 		ListContext list = ctx.list();
-		for(ArgumentContext actx : list.argument()) {
-			Argument a = visitArgument(actx);
-			if( a != null ) {
-				args.add(a);
+		if( list !=null) {
+			for(ArgumentContext actx : list.argument()) {
+				Argument a = visitArgument(actx);
+				if( a != null ) {
+					args.add(a);
+				}
 			}
+			ret.setArgs(args.toArray(new Argument[args.size()]));
 		}
-		ret.setArgs(args.toArray(new Argument[args.size()]));
-
 		List<Statement> stmts = new ArrayList<>();
-		for(StatementContext lctx : ctx.statement()) {
-			Statement ls = visitStatement(lctx);
-			if( ls !=null ) {
-				stmts.add(ls);
+		if( ctx.statement() !=null) {
+			for(StatementContext lctx : ctx.statement()) {
+				Statement ls = visitStatement(lctx);
+				if( ls !=null ) {
+					stmts.add(ls);
+				}
 			}
 		}
 		ret.setStmts(stmts);
@@ -605,10 +618,10 @@ argument
 		FileSourceShLexer lexer = new FileSourceShLexer(CharStreams.fromString(code));
 		FileSourceShParser parser = new FileSourceShParser(new CommonTokenStream(lexer));
 		Parameter1Context ret = parser.parameter1();
-		
+
 		return ret;
 	}
-	
+
 	public static Compare parseCompare(String code) {
 		FileSourceShLexer lexer = new FileSourceShLexer(CharStreams.fromString(code));
 		FileSourceShParser parser = new FileSourceShParser(new CommonTokenStream(lexer));

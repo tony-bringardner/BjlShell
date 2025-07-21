@@ -1,4 +1,4 @@
-// Generated from /Volumes/SanDisk1/eclipse-workspace-jmail/BjlFileSystemConsole/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
+// Generated from /Volumes/SanDisk1/eclipse-workspace-jmail/BjlShell/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
 package us.bringardner.filesource.sh;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -397,6 +397,26 @@ public interface FileSourceShParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitForStatement(FileSourceShParser.ForStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#for_loop_control}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor_loop_control(FileSourceShParser.For_loop_controlContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#for_loop_control}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor_loop_control(FileSourceShParser.For_loop_controlContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#for_compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor_compare(FileSourceShParser.For_compareContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#for_compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor_compare(FileSourceShParser.For_compareContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FileSourceShParser#variable}.
 	 * @param ctx the parse tree

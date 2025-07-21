@@ -328,7 +328,7 @@ public class DebugVariablePanel extends JPanel  {
 		createNodes();
 	}
 
-	public void updateTree(ParseTree tree) {
-		treeView.setTree(tree);
+	public void updateTree(ParseTree tree, String string) {		
+		treeView.setTree(tree,string);
 	}
 }

@@ -1,27 +1,32 @@
 package us.bringardner.shell.test;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-
-import us.bringardner.shell.Console;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import us.bringardner.shell.Console;
+
 
 @TestMethodOrder(OrderAnnotation.class)
-public class TestExecutionForStatement {
+public class TestExecutionForStatement extends AbstractConsoleTest {
 
-	public static class ExecuteResult {
-		int exitCode=0;		
-		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-		ByteArrayOutputStream bae = new ByteArrayOutputStream();			
+	
+	
+	@BeforeAll
+	public static void setup() throws IOException {
+		AbstractConsoleTest.setup("TestFiles");
+		if(!testFilesDir.exists() ) {
+			System.out.println(testFilesDir.getAbsolutePath()+" does not exists");
+		}
 	}
 	
 	public static ExecuteResult executeCommand(String command,String stdIn) {
@@ -44,6 +49,7 @@ public class TestExecutionForStatement {
 		}
 		return ret;
 	}
+	
 
 	@Test
 	public void testForStatent01_1() throws Exception{
@@ -166,6 +172,90 @@ public class TestExecutionForStatement {
 		String err = new String(res.bae.toByteArray());
 		assertEquals(0, res.exitCode,err);
 		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+
+	@Test
+	public void testForStatent03_1() throws Exception{
+		String cmd = 
+				 "for (( i=1; i<=10; i++ ))\n"
+				 + "do  \n"
+				 + " echo \"Loop number:\" $i\n"
+				 + "done"
+				;
+		
+		String expect = 
+				"Loop number: 1\n"
+				+ "Loop number: 2\n"
+				+ "Loop number: 3\n"
+				+ "Loop number: 4\n"
+				+ "Loop number: 5\n"
+				+ "Loop number: 6\n"
+				+ "Loop number: 7\n"
+				+ "Loop number: 8\n"
+				+ "Loop number: 9\n"
+				+ "Loop number: 10\n"
+				+ ""
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+	
+	@Test
+	public void testForStatent03_2() throws Exception{
+		String cmd = 
+				 "for word in This is a list of words\n"
+				 + "do\n"
+				 + " echo $word\n"
+				 + "done"
+				;
+		
+		String expect = 
+				"This\n"
+				+ "is\n"
+				+ "a\n"
+				+ "list\n"
+				+ "of\n"
+				+ "words\n"
+				+ ""
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		assertEquals(expect, out);
+		assertEquals("", err);
+	}
+
+	@Test
+	public void testForStatent03_3() throws Exception{
+		String cmd = 
+				 "for file in \"*.php\"\n"
+				 + "do \n"
+				 + " ls -lh \"$file\"\n"
+				 + "done"
+				;
+		
+		String expect = 
+				""
+				
+				;
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		String lines[] = out.split("\n");
+		assertEquals(1, lines.length,err);
+		assertTrue(lines[0].endsWith("AbcFile.php"));
 		assertEquals("", err);
 	}
 

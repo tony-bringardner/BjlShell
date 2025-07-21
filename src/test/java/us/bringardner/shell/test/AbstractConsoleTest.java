@@ -24,7 +24,7 @@ public abstract class AbstractConsoleTest {
 
 	public static String fileDate;
 	public static Console console;
-	private static File testFilesDir;
+	public static File testFilesDir;
 	
 	
 	public static void setup(String home) throws IOException {

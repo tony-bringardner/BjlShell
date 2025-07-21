@@ -175,6 +175,7 @@ public class BjlShellTreeViewPanel extends JPanel {
 	}
 
 	protected void appendToError(String msg) {
+		System.out.println("append "+msg);
 		StringBuilder buf = new StringBuilder();
 		String tmp1 = msg;
 		while(tmp1.length()>80) {
@@ -284,21 +285,17 @@ public class BjlShellTreeViewPanel extends JPanel {
 		} else {
 			treeView.setShowType(ShowType.Both);
 		}
-		setTree((ParseTree) treeView.getTreeLayout().getRoot());
+		setTree((ParseTree) treeView.getTreeLayout().getRoot(),null);
 		
 	}
 
-	public void updateTree(String code) {
-			FileSourceShParser parser = (FileSourceShParser) getParser(code);
-			ParseTree tree = parser.script();
-			//String tmp = tree.toStringTree(parser);
-			treeView.setTree(tree);
-	}
+	
 
-	public void setTree(ParseTree tree) {
+	public void setTree(ParseTree tree,String errors) {
 		treeView.setTree(tree);
-		//String tmp = tree.toStringTree();
-		//System.out.println();
+		if( errors !=null) {
+			errorTextArea.setText(errors);
+		}
 		
 	}
 

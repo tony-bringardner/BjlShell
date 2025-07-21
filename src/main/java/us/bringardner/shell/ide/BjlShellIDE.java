@@ -918,15 +918,18 @@ public class BjlShellIDE extends JFrame  {
 							});
 
 							ParseTree tree = parser.script();
-							//String tmp = tree.toStringTree(parser);
-							debugVariablePanel.updateTree(tree);
+							
+							
 							
 							List<CompileError> compileErors = errors;
 							SwingUtilities.invokeLater(()->{
+								StringBuilder buf = new StringBuilder();
 								editorPane.removeAllLineHighlights();
 								for(CompileError e : compileErors) {
-										editorPane.addErrorMarker(e);									
+									buf.append(""+e.line+","+e.col+" "+e.msg+"\n");
+									editorPane.addErrorMarker(e);									
 								}
+								debugVariablePanel.updateTree(tree,buf.toString());
 							});
 						}	
 					};
@@ -986,7 +989,7 @@ public class BjlShellIDE extends JFrame  {
 		}
 
 
-
+		createAutoComplete();
 	}
 
 

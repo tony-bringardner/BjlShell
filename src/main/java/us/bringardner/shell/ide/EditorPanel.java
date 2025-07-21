@@ -114,7 +114,6 @@ public class EditorPanel extends JPanel {
 		}
 	};
 
-	private List<ModuleAutoCompleteManager> modules = new ArrayList<>();
 	private List<String> variables = new ArrayList<>();
 	private RTextScrollPane scrollPane;
 	private boolean stopAutoComplete = false;
@@ -580,14 +579,7 @@ public class EditorPanel extends JPanel {
 			provider.addCompletion(new ShorthandCompletion(provider, var+"-variable", var));
 		}
 
-		if( modules != null ) {
-			for (ModuleAutoCompleteManager mod : modules) {
-				//System.out.println("put in provider="+mod.getName());
-				provider.addCompletion(mod.getCompletion(provider));
-			}
-		}
-
-
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

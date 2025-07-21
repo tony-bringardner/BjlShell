@@ -19,8 +19,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JOptionPane;
+
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType (XmlAccessType.FIELD)
 public class Configuration {
 	private static File configFile;
 	private static Configuration global;
@@ -60,17 +72,17 @@ public class Configuration {
 		if( global == null ) {
 			synchronized (Configuration.class) {
 				if( global == null ) {
-					Configuration tmp = new Configuration();
+					Configuration tmp = null;
 					File file = getConfigFile();
 					if( file.exists()) {
 						try {
-							/*
+							
 							JAXBContext ctx = JAXBContext.newInstance(Configuration.class);
 							Unmarshaller um = ctx.createUnmarshaller();
 							tmp = (Configuration) um.unmarshal(file);
-							 */
+							
 						} catch (Exception e) {
-							//JOptionPane.showMessageDialog(null, e.getMessage(), "Error managing configuration", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, e.getMessage(), "Error managing configuration", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
 						tmp = createDefault();
@@ -93,7 +105,7 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if( configFile == null ) {
 					File home = new File(System.getProperty("user.home"));
-					File dir = new File(home,".Solid3D");
+					File dir = new File(home,".bjlsh");
 					if(!dir.exists()) {
 						dir.mkdirs();
 					}
@@ -106,7 +118,15 @@ public class Configuration {
 	}
 
 	public void save () throws IOException {
-
+		JAXBContext ctx;
+		try {
+			ctx = JAXBContext.newInstance(Configuration.class);
+			Marshaller um = ctx.createMarshaller();
+			um.marshal(this, getConfigFile());
+		} catch (JAXBException e) {
+			throw new IOException(e);
+		}
+	
 	}
 
 	public int getMaxRecent() {
@@ -131,10 +151,13 @@ public class Configuration {
 	public List<Template> getTemplates() {
 		if( templates2 == null ) {
 			List<Template> tmp = new ArrayList<>();
+			populateDefault(tmp);
 			if( templates != null ) {
 					if( templates2 == null && templates != null ) {
 						for (Template t : templates) {
-							tmp.add(t.copy());
+							if( !tmp.contains(t)) {
+								tmp.add(t.copy());	
+							}							
 						}						
 					}
 			}
@@ -151,147 +174,45 @@ public class Configuration {
 		templates2 = null;
 	}
 
+	
+	private static Template defaultTemplates [] = {
+			new Template( "true", "true"),
+			new Template( "false", "false"),
+			new Template( "until", "until-loop", 
+					"until [ ${true} ]\n"
+					+ "do\n"
+					+ "  ${echo}\n"
+					+ "done"),
+			new Template( "while", "while-loop", 
+					"while [ ${false} ]\n"
+					+ "do\n"
+					+ "  ${echo}\n"
+					+ "done\n"),
+			
+			new Template( "for", "for-array", 
+					"for ${i} in ${1 2};\n"
+					+ "do\n"
+					+ "\n\techo ${i};\n"
+					+ "done\n"),
+			new Template( "for", "for-list", 
+					"for word in ${list of words}\n"
+					+ "do \n"
+					+ " echo ${\"$word\"}\n"
+					+ "done"),
+			
+			new Template( "for", "for-range", 
+					"for ${i} in {${start}..${stop}..${increment}}\n"
+					+ "do\n"
+					+ "\techo  ${$i}\n"
+					+ "done"),
+	};
+	
 	private static void populateDefault(List<Template> templates) {
-
-
-		templates.add(new Template( "linear_extrude", "linear_extrude", "linear_extrude (height = ${height}, center = ${center}, convexity = ${convexity}, twist = ${twist} ) {\n\t${cursor}\n}"));
-		templates.add(new Template( "rotate_extrude", "rotate_extrude", "rotate_extrude ( ) {\n\t${cursor}\n}"));
-		templates.add(new Template( "for", "for-loop", 
-				"for(${idx} = [${start} : ${increment} : ${end}]) {\n\t${cursor}\n}"));
-
-		templates.add(new Template( "module", "module", 
-				"module ${"+ModuleAutoCompleteManager.EDIT_MODULE_NAME+"} () {\n\t${cursor}\n}"));
-		templates.add(new Template( "function", "function", "function ${name} (${parameters}) = ${value} ${cursor}"));
-		templates.add(new Template( "include", "include", "include <${file_name_no_quotes}>; ${cursor}"));
-		templates.add(new Template( "use", "use", "use <${file_name_no_quotes}>; ${cursor}"));
-
-		templates.add(new Template( "circle", "circle-radius", "circle(${radius}) ${cursor}"));
-		templates.add(new Template( "circle", "circle-diameter", "circle(d=${diameter}) ${cursor}"));
-
-		templates.add(new Template( "square", "square(size,center)", "square(${size},${true} ) ${cursor}"));
-		templates.add(new Template( "square", "square([w,h],center)", "square(${width},${height},${true}) ${cursor}"));
-
-		templates.add(new Template( "polygon", "polygon(points)", "polygon(${points} ) ${cursor}"));
-		templates.add(new Template( "polygon", "polygon(points,paths)", "polygon(${points},${paths} ) ${cursor}"));
-
-		templates.add(new Template( "text", "text", "text(${text}) ${cursor}"));
-		templates.add(new Template( "text", "text(size,font)", "text(text=${text},size=${size},font=${font}) ${cursor}"));
-		templates.add(new Template( "text", "text-all", "text(text=${text},size=${size},font=${font},halign=${halign},valign=${valign}) ${cursor}"));
-
-		templates.add(new Template( "sphere", "sphere-radius", "sphere(${radius}) ${cursor}"));
-		templates.add(new Template( "sphere", "sphere-diameter", "sphere(d=${diameter}) ${cursor}"));
-
-		templates.add(new Template( "cube", "cube(size,center)", "cube(${size},${center}) ${cursor}"));
-		templates.add(new Template( "cube", "cube(size,center-location)", "cube(${size},center=[${x},${y},${z}]) ${cursor}"));
-
-		templates.add(new Template( "cube", "cube(w,d,h,center)", "cube([${width},${depth},${height}],center=${center}) ${cursor}"));
-		templates.add(new Template( "cube", "cube(w,d,h,center,cornerRadius)", "cube([${width},${depth},${height}],center=${center},cornerRadius=${cornerRadius}) ${cursor}"));
-		templates.add(new Template( "cube", "cube(w,d,h,center,chamferHeight)", "cube([${width},${depth},${height}],center=${center},chamferHeight=${chamferHeight}) ${cursor}"));
-
-		templates.add(new Template( "cylinder", "cylinder", "cylinder(h=${height}, r=${radius}) ${cursor}"));
-		templates.add(new Template( "cylinder", "cylinder-radius", "cylinder(h = ${height}, r1 = ${BottomRadius}, r2 = ${TopRadius}, center=${center}) ${cursor}"));
-		templates.add(new Template( "cylinder", "cylinder-diameter", "cylinder(h = ${height}, d1 = ${BottomDiameter}, d2 = ${TopDiameter}, center=${center}) ${cursor}"));
-
-		templates.add(new Template( "polyhedron", "polyhedron(points,faces,convexity,center)", "polyhedron(points=${points},faces=${faces}, convexity=${convexity},center=${center}); ${cursor}"));
-		templates.add(new Template( "polyhedron", "polyhedron(number-of-faces,center)", "polyhedron(faces=${faces}, center=${center}); ${cursor}"));
-
-		templates.add(new Template( "parabola", "parabola(r,focalLength,center)", "parabola(r=${r},focalLength=${focalLength},center=${center}); ${cursor}"));
-		templates.add(new Template( "parabola", "parabola(r,h,center)", "parabola(r=${r},h=${h},center=${center}); ${cursor}"));
-		templates.add(new Template( "parabola", "parabola(r,a,b,center)", "parabola(r=${r},a=${a},b=${b},center=${center}); ${cursor}"));		
-		templates.add(new Template( "parabola", "parabola(r,a,b,thickness,center)", "parabola(r=${r},a=${a},b=${b},thickness=${thickness},center=${center}); ${cursor}"));
-
-		templates.add(new Template( "projection", "projection(cut,step,center)", "projection(cut=${cut},step=${step},${center}) ${cursor}"));
-		templates.add(new Template( "projection", "projection()", "projection() ${cursor}"));
-
-		templates.add(new Template("union","union ()"));
-		templates.add(new Template("difference","difference ()"));
-		templates.add(new Template("intersection","intersection ()"));
-
-
-
-
-
-		templates.add(new Template( "translate", "translate", "translate([${x},${y},${z}]) ${cursor}"));
-
-		templates.add(new Template( "rotate", "rotate([x,y,z])", "rotate([${deg_x},${deg_y},${deg_z}]) ${cursor}"));
-		templates.add(new Template( "rotate", "rotate([x,y,z],onCenter=true-false)", "rotate([${deg_x},${deg_y},${deg_z},onCenter=${onCenter}]) ${cursor}"));
-
-		templates.add(new Template( "rotate", "rotate", "rotate([${deg_x},${deg_y},${deg_z}]) ${cursor}"));
-
-		templates.add(new Template( "centerOn", "centerOn", "centerOn([${x},${y},${z}]) ${cursor}"));
-
-		templates.add(new Template( "scale", "scale", "scale([${x},${y},${z}]) ${cursor}"));
-		templates.add(new Template( "resize", "resize", "resize([${x},${y},${z}]) ${cursor}"));
-		templates.add(new Template( "mirror", "mirror", "mirror([${x},${y},${z}]) ${cursor}"));
-
-		templates.add(new Template( "mirror", "mirror", "mirror([${x},${y},${z}]) ${cursor}"));
-
-		templates.add(new Template( "multmatrix", "multmatrix", "multmatrix(${matrix}) ${cursor}"));
-
-		templates.add(new Template( "color", "color", "color(${name}) ${cursor}"));
-		templates.add(new Template( "color", "color-alpha", "color(${name},${alpha}) ${cursor}"));
-		templates.add(new Template( "color", "color(r,g,b,a)", "color(${red},${green},${blue},${alpha}) ${cursor}"));
-
-		templates.add(new Template( "offset", "offset-radius", "offset(r=${radius}) ${cursor}"));
-		templates.add(new Template( "offset", "offset-delta", "offset(delta=${delta},chamfer=${chamfer}) ${cursor}"));
-		templates.add(new Template("hull","hull ()"));
-		templates.add(new Template("minkowski","minkowski ()"));
-
-		templates.add(new Template( "true", "true"));
-		templates.add(new Template( "false", "false"));
-		templates.add(new Template( "$fa", "minimum angle", ""));
-		templates.add(new Template( "$fs", "minimum size", ""));
-		templates.add(new Template( "$t", "animation step", ""));
-		templates.add(new Template( "$fn", "number of fragments", ""));
-		//templates.add(new Template( "$fn", "number of fragments", ""));
-		templates.add(new Template( "$vpr", "viewport rotation angles in degrees", ""));
-
-
-		templates.add(new Template( "$vpt", "viewport translation ", ""));
-		templates.add(new Template( "$vpd", "viewport camera distance ", ""));
-		templates.add(new Template( "$children", "number of module children ", ""));
-
-
-		for(String val : ("abs," + 
-				"sign," + 
-				"sin," + 
-				"cos," + 
-				"tan," + 
-				"acos," + 
-				"asin," + 
-				"atan," + 
-				"atan2," + 
-				"floor," + 
-				"round," + 
-				"ceil," + 
-				"ln," + 
-				"len," + 
-				"let," + 
-				"log," + 
-				"pow," + 
-				"sqrt," + 
-				"exp," + 
-				"rands," + 
-				"min," + 
-				"max").split("[,]")){
-			templates.add(new Template(val,val+"-Math",val+"(${value} )"));
+		for(Template t : defaultTemplates) {
+			if(!templates.contains(t)) {
+				templates.add(t);
+			}
 		}
-
-		for(String val : ( 
-				"concat," + 
-						"lookup," + 
-						"str," + 
-						"chr," + 
-						"search," + 
-						"version," + 
-						"version_num," +
-						"dot," +
-						"norm," + 
-				"cross").split("[,]")) {
-			templates.add(new Template(val,val+"-function",val+"(${value} )"));
-		}
-
-
 	}
 
 	public static Configuration createDefault() {

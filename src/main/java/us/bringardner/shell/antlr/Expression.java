@@ -139,8 +139,8 @@ expression
 
  */
 			VariableContext ve = ctx.variable();
-			String name = ""+ctx2.getVariable(ve);
-			Object v1 = ctx2.getVariable(name);
+			//String name = ""+ctx2.getVariable(ve);
+			Object v1 = ctx2.getVariable(ve);
 			 
 			Expression e = new Expression(ctx.expression());
 			Object v2 = e.evaluate(ctx2);

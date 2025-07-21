@@ -279,9 +279,13 @@ doStatement
     ;
 
 forStatement
-    : FOR ID IN list SEMI? DO statement+ DONE
+    : FOR ID IN list SEMI? NL? DO statement+ DONE
+    | FOR for_loop_control NL? DO statement+ DONE
     ;
 
+for_loop_control: LPAREN_LPAREN assignStatement SEMI for_compare SEMI expression RPAREN_RPAREN;
+
+for_compare: compare;
 
 variable:
         idOnly=ID ( associative_index | array_index)?

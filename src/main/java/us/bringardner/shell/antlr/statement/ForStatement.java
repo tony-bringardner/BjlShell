@@ -7,12 +7,42 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Argument;
+import us.bringardner.shell.antlr.Compare;
+import us.bringardner.shell.antlr.Expression;
 import us.bringardner.shell.antlr.Statement;
 
 public class ForStatement extends LoopStatement{
 	//   : FOR ID IN argument+ SEMI? DO loop_statement+ DONE
 	String varName;
 	List<Statement> stmts;
+	AssignStatement assign;
+	Compare compare;
+	Expression expr;
+	
+
+	public AssignStatement getAssign() {
+		return assign;
+	}
+
+	public void setAssign(AssignStatement assign) {
+		this.assign = assign;
+	}
+
+	public Compare getCompare() {
+		return compare;
+	}
+
+	public void setCompare(Compare compare) {
+		this.compare = compare;
+	}
+
+	public Expression getExpr() {
+		return expr;
+	}
+
+	public void setExpr(Expression expr) {
+		this.expr = expr;
+	}
 
 	public String getVarName() {
 		return varName;
@@ -37,6 +67,14 @@ public class ForStatement extends LoopStatement{
 	}
 
 	protected int execute(ShellContext sc) throws IOException {
+		if( assign == null) {
+			return executeShellStyle(sc);
+		} else {
+			return executeCStyle(sc);
+		}
+	}
+	
+	protected int executeShellStyle(ShellContext sc) throws IOException {
 		int ret = 0;
 		ShellContext.LoopControl tmp = null;
 		for(Argument arg : args ) {
@@ -60,6 +98,38 @@ public class ForStatement extends LoopStatement{
 			}						
 		}
 
+		return ret;
+	}
+
+	public void setLoopControl(AssignStatement assign,Compare compare,Expression expr) {
+		this.assign = assign;
+		this.compare = compare;
+		this.expr = expr;
+	}
+
+	protected int executeCStyle(ShellContext sc) throws IOException {
+		int ret = 0;
+		ShellContext.LoopControl tmp = null;
+		assign.execute(sc);
+		while(compare.evaluate(sc)) {
+			if(ShellContext.LoopControl.Break.equals(tmp)) {
+				break;
+			}
+			
+			for(Statement stmt : stmts) {
+				try {
+					ret = stmt.process(sc);
+				} catch(LoopControlException e) {
+					if(e.howFar>1) {
+						throw new LoopControlException(e.type, e.howFar-1);
+					}
+					tmp = e.type;
+					break;
+				}					 				
+			}
+			expr.evaluate(sc);
+		}
+	
 		return ret;
 	}
 }

@@ -1,7 +1,7 @@
 package us.bringardner.shell.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static us.bringardner.shell.test.TestVisitor.execute;
+import static us.bringardner.shell.test.TestVisitor.parse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -30,7 +30,7 @@ public class TestExpantion {
 				+ "echo $s2 \n"
 						;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(4, stmts.size());
 
 		Console console = new Console();

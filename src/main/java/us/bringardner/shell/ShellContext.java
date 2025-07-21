@@ -230,10 +230,13 @@ $
 
 	public Object getVariable(VariableContext ctx) {
 		String name = ctx.getText();
-		// TODO
 		
 		if( ctx.idOnly !=null ) {
-			return ctx.idOnly.getText();
+			String tmp = ctx.idOnly.getText();
+			Object val = getValue(tmp);
+			if( val == null) {
+				return ctx.idOnly.getText();
+			} 
 		} else 
 			
 			if( ctx.VARIABLE() !=null) {

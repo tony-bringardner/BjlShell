@@ -51,7 +51,7 @@ public class TestVisitor {
 		return ret;
 	}
 
-	public static List<Statement> execute(String code) throws Exception {
+	public static List<Statement> parse(String code) throws Exception {
 		AtomicReference<Exception> error = new AtomicReference<>();
 		FileSourceShLexer lexer = new FileSourceShLexer(CharStreams.fromString(code));
 		lexer.addErrorListener(new BaseErrorListener() {
@@ -320,7 +320,7 @@ $((12+32))
 				new RedirectExpect("cmd",new String[0],">","file"),
 				new RedirectExpect("cmd",new String[0],"<","file")
 		};
-		List<Statement> stmts = execute(code);
+		List<Statement> stmts = parse(code);
 		//System.out.println("stmts,size="+stmts.size());
 		assertEquals(expects.length,stmts.size());
 		for(int idx=0; idx < expects.length; idx++) {
@@ -413,7 +413,7 @@ file_address:
 				+ "fi\n"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt");
@@ -440,7 +440,7 @@ file_address:
 				+ "fi\n"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt");
@@ -464,7 +464,7 @@ file_address:
 				+ "fi\n"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt");
@@ -489,7 +489,7 @@ file_address:
 				+ "fi\n"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt");
@@ -514,7 +514,7 @@ file_address:
 				+ "greeting you"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(2, stmts.size(),"Expected two stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(FunctionDefStatement.class, stmt.getClass(),"Expected FunctionDefStatement");
@@ -545,7 +545,7 @@ file_address:
 				+ ""
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(ForStatement.class, stmt.getClass());
@@ -567,7 +567,7 @@ file_address:
 				+ ""
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(ForStatement.class, stmt.getClass());
@@ -579,6 +579,30 @@ file_address:
 		}						
 	}
 
+	@Test
+	public void testForStatementCStyle()throws Exception{
+		String cmd = "for (( i=1; i<=10; i++ ))\n"
+				+ "do  \n"
+				+ " echo \"Loop number:\" $i\n"
+				+ "done"
+				;
+
+		List<Statement> stmts = parse(cmd);
+		assertEquals(1, stmts.size(),"Expected one stmt");
+		Statement stmt = stmts.get(0);
+		assertEquals(ForStatement.class, stmt.getClass());
+
+		if (stmt instanceof ForStatement	) {
+			ForStatement ifs = (ForStatement) stmt;
+			
+			assertEquals(1, ifs.getStmts().size());
+			assertNotNull(ifs.getAssign());
+			assertNotNull(ifs.getCompare());
+			assertNotNull(ifs.getExpr());
+		}	
+		
+		
+	}
 	@Test
 	public void testSpecialVartiables()throws Exception{
 		String cmd = 
@@ -594,7 +618,7 @@ file_address:
 						+ ""
 						;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(9, stmts.size());
 
 		for(int idx=0,sz=stmts.size(); idx<sz; idx++ ) {
@@ -613,7 +637,7 @@ file_address:
 				+ ""
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size());
 		Statement stmt = stmts.get(0);
 		assertEquals(WhileStatement.class, stmt.getClass());
@@ -634,7 +658,7 @@ file_address:
 				+ "done"
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size());
 		Statement stmt = stmts.get(0);
 		assertEquals(UntilStatement.class, stmt.getClass());
@@ -654,7 +678,7 @@ file_address:
 				+ ""
 				;
 
-		List<Statement> stmts = execute(cmd);
+		List<Statement> stmts = parse(cmd);
 		assertEquals(1, stmts.size(),"Expected one stmt");
 		Statement stmt = stmts.get(0);
 		assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt");
@@ -682,7 +706,7 @@ file_address:
 
 		for(char c : options.toCharArray()) {
 			String cmd = String.format(cmd1, ""+c);
-			List<Statement> stmts = execute(cmd);
+			List<Statement> stmts = parse(cmd);
 			assertEquals(1, stmts.size(),"Expected one stmt c="+c);
 			Statement stmt = stmts.get(0);
 			assertEquals(IfStatement.class, stmt.getClass(),"Expected ifStatmemt c="+c);
