@@ -216,10 +216,21 @@ public class Configuration {
 					+ "else\n"
 					+ "  # code to be executed if the condition is false\n"
 					+ "fi"),
-			new Template( "name", "name2", ""),
-			new Template( "name", "name2", ""),
-			new Template( "name", "name2", ""),
-			new Template( "name", "name2", ""),
+			new Template( "expression", "$((x % 2))", "$$(( ${cursor} ))"),
+			new Template( "do", "do-statement", 
+					"do\n"
+					+ "	# code goes here\n"
+					+ "done\n"),
+			new Template( "parameterPlusword", "parameter:+word (If parameter is null or unset, nothing is substituted, otherwise the expansion of word is substituted. The value of parameter is not used.)", 
+					"$${${parameter}:+${word}}"),
+			new Template( "parameterMinusword", "parameter:−word (If parameter is unset or null, the expansion of word is substituted. Otherwise, the value of parameter is substituted.)", 
+					"$${${parameter}:-${word}}"),
+			new Template( "parameterEqword", "parameter:=word (If parameter is unset or null, the expansion of word is assigned to parameter, and the result of the expansion is the final value of parameter. Positional parameters and special parameters may not be assigned in this way.)", 
+					"$${${parameter}:=${word}}"),
+			
+			new Template( "parameter?word", "parameter:?word (If parameter is null or unset, the shell writes the expansion of word (or a message to that effect if word is not present) to the standard error and, if it is not interactive, exits with a non-zero status. An interactive shell does not exit, but does not execute the command associated with the expansion. Otherwise, the value of parameter is substituted.)", 
+					"$${${parameter}:?${parameter is not set}}"),
+			
 			new Template( "name", "name2", ""),
 			new Template( "name", "name2", ""),
 			

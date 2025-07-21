@@ -13,6 +13,7 @@ import us.bringardner.filesource.sh.FileSourceShParser;
 import us.bringardner.filesource.sh.FileSourceShParser.Associative_indexContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Parameter1Context;
 import us.bringardner.filesource.sh.FileSourceShParser.ParameterContext;
+import us.bringardner.filesource.sh.FileSourceShParser.Parameter_bodyContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PbodyContext;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
@@ -50,6 +51,7 @@ ${parameter:-word}
 		String fullText = ctx1.getText();
 		fullText = fullText.substring(2,fullText.length()-1);
 		Parameter1Context ctx = FileSourceShVisitorImpl.parseParameter1(fullText);
+		Parameter_bodyContext bodyxx = ctx.parameter_body();
 		String bodyText = ctx.parameter_body().getText();
 		boolean isRange = false;
 		Object ret = null;
@@ -332,7 +334,7 @@ TODO: what is this
 					}
 
 				} else {
-					System.out.println("No match");
+					ret = "";
 				}
 			}
 		} else {

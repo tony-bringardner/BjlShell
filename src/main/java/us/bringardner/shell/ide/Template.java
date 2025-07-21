@@ -43,7 +43,7 @@ public class Template {
 		String d = description == null ? name : description.isBlank() ? name : description;
 		if( code == null || code.isBlank()) {
 			provider.addCompletion(new ShorthandCompletion(provider,name,name,d));
-		} else if( code.indexOf("$") > 0) {
+		} else if( code.indexOf("$") >= 0) {
 			provider.addCompletion(new TemplateCompletion(provider, name,d,code));
 		} else {
 			provider.addCompletion(new ShorthandCompletion(provider,name,code,d));

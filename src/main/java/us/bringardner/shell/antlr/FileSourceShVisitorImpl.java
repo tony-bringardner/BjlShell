@@ -33,6 +33,7 @@ import us.bringardner.filesource.sh.FileSourceShParser.ListContext;
 import us.bringardner.filesource.sh.FileSourceShParser.MathExpressionContext;
 import us.bringardner.filesource.sh.FileSourceShParser.MathStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Parameter1Context;
+import us.bringardner.filesource.sh.FileSourceShParser.ParameterContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PathContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PipeOpContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PipeStatementContext;
@@ -318,8 +319,17 @@ pipeOp:
 
 	@Override
 	public Statement visitMathStatement(MathStatementContext ctx) {
-		Expression ret = visitExpression(ctx.mathExpression().expression());
-		return new MathStatement(ctx,ret);
+		MathExpressionContext mx = ctx.mathExpression();
+		if( mx !=null && mx.expression()!=null) {
+			Expression ret = visitExpression(mx.expression());
+			return new MathStatement(ctx,ret);
+		}
+		ParameterContext p = ctx.parameter();
+		if( p != null ) {
+			Parameter pp = new Parameter(p);
+			return new MathStatement(ctx,pp);
+		}
+		throw new RuntimeException("Invalie math statement");
 	}
 
 	@Override
