@@ -205,6 +205,24 @@ public class Configuration {
 					+ "do\n"
 					+ "\techo  ${$i}\n"
 					+ "done"),
+			
+			new Template( "if", "if", 
+					"if [ ${condition} ]; then\n"
+					+ "  # code to be executed if the condition is true\n"
+					+ "fi"),
+			new Template( "if", "if-else", 
+					"if [ ${condition} ]; then\n"
+					+ "  # code to be executed if the condition is true\n"
+					+ "else\n"
+					+ "  # code to be executed if the condition is false\n"
+					+ "fi"),
+			new Template( "name", "name2", ""),
+			new Template( "name", "name2", ""),
+			new Template( "name", "name2", ""),
+			new Template( "name", "name2", ""),
+			new Template( "name", "name2", ""),
+			new Template( "name", "name2", ""),
+			
 	};
 	
 	private static void populateDefault(List<Template> templates) {
