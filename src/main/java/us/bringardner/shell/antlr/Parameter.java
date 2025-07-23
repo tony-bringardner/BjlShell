@@ -13,10 +13,10 @@ import us.bringardner.filesource.sh.FileSourceShParser;
 import us.bringardner.filesource.sh.FileSourceShParser.Associative_indexContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Parameter1Context;
 import us.bringardner.filesource.sh.FileSourceShParser.ParameterContext;
-import us.bringardner.filesource.sh.FileSourceShParser.Parameter_bodyContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PbodyContext;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.signal.ExitException;
 
 public class Parameter {
 
@@ -47,17 +47,23 @@ ${parameter:-word}
 					+ ":(?<number3>[\\-0-9]*)"
 			+ ""
 			);
+	public static final Pattern NO_RANGE = Pattern.compile("(?<name>[a-zA-Z_]{1,}[a-zA-Z0-9_]{0,})(?<colon>[:])?(?<type>[-=?+])(?<val>.*)");
+
 	public Object evaluate(ShellContext sc) {
 		String fullText = ctx1.getText();
 		fullText = fullText.substring(2,fullText.length()-1);
+		Matcher m = NO_RANGE.matcher(fullText);
+		if( m.matches()) {
+			return evaluateNoRange(m,sc);
+		}
+		
 		Parameter1Context ctx = FileSourceShVisitorImpl.parseParameter1(fullText);
-		Parameter_bodyContext bodyxx = ctx.parameter_body();
 		String bodyText = ctx.parameter_body().getText();
 		boolean isRange = false;
 		Object ret = null;
 		String name = null;
 		
-		Matcher m = RANGE2.matcher(fullText);
+		m = RANGE2.matcher(fullText);
 
 		if( m.matches()) {
 			String n1 = m.group("number1");
@@ -339,6 +345,71 @@ TODO: what is this
 			}
 		} else {
 			//throw new RuntimeException("Invalid parameter="+ctx.getText());
+		}
+
+		return ret;
+	}
+
+	private Object evaluateNoRange(Matcher m, ShellContext sc)  {
+		String name = m.group("name");
+		String type = m.group("type");
+		String val = m.group("val");
+		String colon = m.group("colon");
+		Object ret = sc.getVariable(name);
+		switch(type.charAt(0)) {
+		case '=':
+			/*
+			${parameter:=word}
+			If parameter is unset or null, the expansion of word is assigned to parameter. 
+			The value of parameter is then substituted. Positional parameters and special parameters may not be assigned to in this way.
+			 */
+			if( ret == null) {
+				ret = val;
+				
+				sc.setVariable(name, ret);
+			}
+			break;
+		case '-':
+			/*
+			 * ${parameter:−word}
+					If parameter is unset or null, the expansion of word is substituted. 
+					Otherwise, the value of parameter is substituted.
+					
+				if the colon is included, the operator tests for both parameter’s existence and that its value is not null; 
+				if the colon is omitted, the operator tests only for existence.
+			 */
+			if( colon == null && ret == null) {
+				// TODO: requires revamp of variable management
+				ret = val;
+			} else if( ret == null ) {					
+					ret = val;
+				}
+			break;
+		case '+':
+			/*
+			${parameter:+word}
+			If parameter is null or unset, nothing is substituted, otherwise the expansion of word is substituted.
+			 */		
+			if( ret != null ) {
+				ret = val; 
+			}
+
+			break;
+		case '?':
+			/*
+			If parameter is null or unset, the shell writes the expansion of word (or a message to that effect if word is not present) 
+				to the standard error and, if it is not interactive, exits with a non-zero status. 
+				An interactive shell does not exit, but does not execute the command associated with the expansion. Otherwise, 
+				the value of parameter is substituted.
+			 */
+			if( ret == null) {
+				
+				if( sc.console.isInteractive) {
+					throw new ExitException(sc, 1,val);
+				}
+			}
+			break;
+		default: throw new RuntimeException("Invalid parameter type = "+type);
 		}
 
 		return ret;

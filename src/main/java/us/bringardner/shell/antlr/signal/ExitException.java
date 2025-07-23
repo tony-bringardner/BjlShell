@@ -9,13 +9,24 @@ public class ExitException extends FsshException {
 	
 	public ShellContext ctx;
 	public int exitCode = 0;
+	public String message;
+	
+	public ExitException(ShellContext ctx, int exitCode,String message) {
+		this(ctx,exitCode);
+		this.message = message;
+	}
+	
 	public ExitException(ShellContext ctx, int exitCode) {
 		this.ctx = ctx;
 		this.exitCode = exitCode;
 	}
 	
 	public String toString() {
-		return "Exit "+exitCode;
+		if( message == null) {
+			return "Exit "+exitCode;
+		} else {
+			return message;
+		}
 	}
 
 
