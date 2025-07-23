@@ -189,7 +189,7 @@ ${parameter:-word}
 
 		
 		String body = bodyText;
-		String body1 = "";
+		
 		StringBuilder buf = new StringBuilder();
 		PbodyContext bc = ctx.parameter_body().pbody();
 		if(!isRange && bc !=null ) {
@@ -203,7 +203,6 @@ ${parameter:-word}
 				}
 
 
-				body1 = buf.toString();
 				if( body.startsWith("^") || body.startsWith(",")) {
 					return patternChageCase(ret,bodyText,bc);
 				}
@@ -233,45 +232,8 @@ ${parameter:-word}
 				}
 			}
 		}
-		if(!isRange &&( body.startsWith(":-") || body.startsWith("-"))) {
-			//${parameter:-word}
-			//If parameter is unset or null, the expansion of word is substituted. Otherwise, the value of parameter is substituted.
-
-			if( ret == null) {
-				int idx = body.indexOf('-');
-				ret = body.substring(idx+1);
-			}
-		} else  if( body.startsWith(":=") ) {
-			/*
-${parameter:=word}
-If parameter is unset or null, the expansion of word is assigned to parameter. The value of parameter is then substituted. Positional parameters and special parameters may not be assigned to in this way.
-			 */
-			if( ret == null) {
-				ret = body.substring(2);
-				sc.setVariable(name, ret);
-			}
-		} else  if( body.startsWith(":?") ) {
-			/*
-${parameter:?word}
-If parameter is null or unset, the expansion of word (or a message to that effect if word is not present) is written to the standard error 
-	and the shell, if it is not interactive, exits. 
-	Otherwise, the value of parameter is substituted.
-			 */
-			if( ret == null) {
-				String msg = body1.substring(4);
-				sc.stderr.println(msg);
-			}
-		} else  if( body.startsWith(":+") ) {
-			/*
-${parameter:+word}
-If parameter is null or unset, nothing is substituted, otherwise the expansion of word is substituted.
-TODO: what is this
-			 */		
-			if( ret != null ) {
-				ret = body.substring(2); 
-			}
-
-		} else  if( body.startsWith(":") ) {
+		
+		if( body.startsWith(":") ) {
 			if( ret !=null ) {
 				m = RANGE1.matcher(body);
 
