@@ -1100,7 +1100,6 @@ public class BjlShellIDE extends JFrame  {
 			byte data[]= text.getBytes();
 			StringBuilder ret = new StringBuilder();
 			for(int b : data) {
-				char c=(char)b;
 				if( b>= 9 && b < 127 ) {
 					ret.append((char)b);
 				}
