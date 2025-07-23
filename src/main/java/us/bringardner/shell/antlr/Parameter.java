@@ -52,6 +52,8 @@ ${parameter:-word}
 	public Object evaluate(ShellContext sc) {
 		String fullText = ctx1.getText();
 		fullText = fullText.substring(2,fullText.length()-1);
+		fullText = FileSourceShPreProcessorVisitorImpl.processString(fullText, sc);
+		
 		Matcher m = NO_RANGE.matcher(fullText);
 		if( m.matches()) {
 			return evaluateNoRange(m,sc);

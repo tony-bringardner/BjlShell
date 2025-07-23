@@ -121,6 +121,19 @@ public class TestParameter {
 	}
 
 	@Test
+	public void testParameter07_1() {
+		ShellContext ctx = new ShellContext(new Console());
+		ctx.setVariable("string", "01234567890abcdefgh");
+		ctx.setVariable("start", "7");
+		String expect = "7890abcdefgh";
+		String code = "${string:$start}";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actual);	
+
+	}
+
+	@Test
 	public void testParameter08() {
 		ShellContext ctx = new ShellContext(new Console());
 		ctx.setVariable("string", "01234567890abcdefgh");
@@ -131,6 +144,9 @@ public class TestParameter {
 		assertEquals(expect, actual);	
 
 	}
+
+	
+	
 	@Test
 	public void testParameter09() {
 		ShellContext ctx = new ShellContext(new Console());
@@ -650,6 +666,26 @@ public class TestParameter {
 		assertEquals(expectOut, actualOut);
 		assertEquals(expectErr, actualErr);
 		assertEquals(1, res.exitCode);
+		
+		
+	}
+	
+	@Test
+	public void testParameter41() throws IOException {
+		AbstractConsoleTest.console = new Console();
+
+		String code = "string=\"01234567890abcdefgh\"\n"
+				+ "start=7\n"
+				+ "echo ${string:$start}";
+		String expect = "7890abcdefgh\n";
+		
+		//System.out.println(code);
+		TestExecutionForStatement.ExecuteResult res = TestExecutionForStatement.executeCommand(code, "");
+		String actualOut = new String(res.bao.toByteArray());
+		//String actualErr = new String(res.bae.toByteArray());
+		//System.out.println("actual = "+actual);
+		assertEquals(expect, actualOut);
+		assertEquals(0, res.exitCode);
 		
 		
 	}
