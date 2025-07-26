@@ -40,6 +40,7 @@ import us.bringardner.filesource.sh.FileSourceShParser.PipeStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.PipeableStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.RedirectionOperatorContext;
 import us.bringardner.filesource.sh.FileSourceShParser.ScriptContext;
+import us.bringardner.filesource.sh.FileSourceShParser.SelectStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.StatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Statement_blockContext;
 import us.bringardner.filesource.sh.FileSourceShParser.Statement_group1Context;
@@ -65,6 +66,7 @@ import us.bringardner.shell.antlr.statement.IfStatement;
 import us.bringardner.shell.antlr.statement.LogicStatement;
 import us.bringardner.shell.antlr.statement.MathStatement;
 import us.bringardner.shell.antlr.statement.PipeStatement;
+import us.bringardner.shell.antlr.statement.SelectStatement;
 import us.bringardner.shell.antlr.statement.StatementGroup;
 import us.bringardner.shell.antlr.statement.StatementGroup1;
 import us.bringardner.shell.antlr.statement.UntilStatement;
@@ -104,6 +106,7 @@ public class FileSourceShVisitorImpl extends FileSourceShParserBaseVisitor<Objec
 	@Override
 	public Statement visitStatement(StatementContext ctx) {
 		Statement ret = null;
+		//String txt = ctx.getText();
 		if(ctx.commandStatement()!=null ) {
 			ret = visitCommandStatement(ctx.commandStatement());
 		} else if(ctx.pipeStatement()!=null ) {
@@ -132,7 +135,7 @@ public class FileSourceShVisitorImpl extends FileSourceShParserBaseVisitor<Objec
 			} else if(ctx.loop_controll_statement().BREAK()!=null ) {
 				ret = new BreakStatement(ctx.loop_controll_statement());				
 			} else {
-				throw new RuntimeException("No valid break or continue statement ");
+				throw new RuntimeException("No valid break or continue statement '"+ctx.getText()+"'");
 			}
 		} else if (ctx.op!=null) {
 			Statement left = visitStatement(ctx.left);
@@ -150,8 +153,12 @@ public class FileSourceShVisitorImpl extends FileSourceShParserBaseVisitor<Objec
 			ret = visitCompareStatement(ctx.compareStatement());
 		} else if (ctx.backgroundCommand()!=null) {
 			ret = visitBackgroundCommand(ctx.backgroundCommand());
+		}else if(ctx.selectStatement()!=null ) {
+			ret = visitSelectStatement(ctx.selectStatement());
+		} else if( ctx.stmt_only!=null) {
+			ret = visitStatement(ctx.stmt_only);
 		} else  {
-			throw new RuntimeException("No known statement ");
+			throw new RuntimeException("No known statement '"+ctx.getText()+"'");
 		} 
 
 		return ret;
@@ -525,6 +532,38 @@ forStatement
 		return ret;
 	}
 
+	@Override
+	public Statement visitSelectStatement(SelectStatementContext ctx) {
+		SelectStatement ret = new SelectStatement(ctx);
+		if( ctx.ID() !=null){
+			ret.setVarName(ctx.ID().getText());
+		} else {
+			throw new RuntimeException("Invalid for statement");
+		}
+		List<Argument> args = new ArrayList<>();
+		ListContext list = ctx.list();
+		if( list !=null) {
+			for(ArgumentContext actx : list.argument()) {
+				Argument a = visitArgument(actx);
+				if( a != null ) {
+					args.add(a);
+				}
+			}
+			ret.setArgs(args.toArray(new Argument[args.size()]));
+		}
+		List<Statement> stmts = new ArrayList<>();
+		if( ctx.statement() !=null) {
+			for(StatementContext lctx : ctx.statement()) {
+				Statement ls = visitStatement(lctx);
+				if( ls !=null ) {
+					stmts.add(ls);
+				}
+			}
+		}
+		ret.setStmts(stmts);
+
+		return ret;
+	}
 
 	@Override
 	public Statement visitFunctionDefinition(FunctionDefinitionContext ctx) {

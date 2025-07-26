@@ -139,7 +139,19 @@ public class Read extends ShellCommand{
 		return ret;
 	}
 
-	private String readLine(ShellContext ctx,String prompt, char lineDelim, int timeout, String editLineText,int n,int N, List<Options> options) throws IOException {
+	public String readLine(ShellContext ctx,String prompt) throws IOException {
+		List<Options> options = new ArrayList<>();
+		String editLineText="";
+		char lineDelim = '\n';
+
+		int n = -1;
+		int N = -1;
+		int timeout = -1;
+		
+		return readLine(ctx, prompt, lineDelim, timeout, editLineText, n, N, options);
+	}
+	
+	public String readLine(ShellContext ctx,String prompt, char lineDelim, int timeout, String editLineText,int n,int N, List<Options> options) throws IOException {
 		if(NativeKeyboard.isAvailible() && ctx.stdin == Console.System_in || ctx.stdin instanceof NativeKeyboard) {
 			return readLineNative(ctx,prompt, lineDelim, timeout, editLineText, n, N, options);
 		} else {

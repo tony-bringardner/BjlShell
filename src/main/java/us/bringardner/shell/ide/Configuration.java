@@ -77,10 +77,10 @@ public class Configuration {
 					if( file.exists()) {
 						try {
 							
-							JAXBContext ctx = JAXBContext.newInstance(Configuration.class);
-							Unmarshaller um = ctx.createUnmarshaller();
-							tmp = (Configuration) um.unmarshal(file);
-							
+							//JAXBContext ctx = JAXBContext.newInstance(Configuration.class);
+							//Unmarshaller um = ctx.createUnmarshaller();
+							//tmp = (Configuration) um.unmarshal(file);
+							tmp = createDefault();
 						} catch (Exception e) {
 							JOptionPane.showMessageDialog(null, e.getMessage(), "Error managing configuration", JOptionPane.ERROR_MESSAGE);
 						}
@@ -228,10 +228,17 @@ public class Configuration {
 			new Template( "parameterEqword", "parameter:=word (If parameter is unset or null, the expansion of word is assigned to parameter, and the result of the expansion is the final value of parameter. Positional parameters and special parameters may not be assigned in this way.)", 
 					"$${${parameter}:=${word}}"),
 			
-			new Template( "parameter?word", "parameter:?word (If parameter is null or unset, the shell writes the expansion of word (or a message to that effect if word is not present) to the standard error and, if it is not interactive, exits with a non-zero status. An interactive shell does not exit, but does not execute the command associated with the expansion. Otherwise, the value of parameter is substituted.)", 
+			new Template( "parameter?word", 
+					"parameter:?word (If parameter is null or unset, the shell writes the expansion \nof word (or a message to that effect if word is not present) to the standard error and, if it is not interactive, exits with a non-zero status. An interactive shell does not exit, but does not execute the command associated with the expansion. Otherwise, the value of parameter is substituted.)", 
 					"$${${parameter}:?${parameter is not set}}"),
 			
-			new Template( "name", "name2", ""),
+			
+			new Template( "case", "case-statement", 
+					"until [ ${true} ]\n"
+					+ "do\n"
+					+ "  ${echo}\n"
+					+ "done"),
+			
 			new Template( "name", "name2", ""),
 			
 	};

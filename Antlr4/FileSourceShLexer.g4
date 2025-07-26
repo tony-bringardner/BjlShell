@@ -137,6 +137,7 @@ BACKQUOTE:'`';
 CONTINUE:'continue';
 BREAK:'break';
 FOR:'for';
+SELECT: 'select';
 IN:'in';
 WHILE:'while';
 DONE:'done';

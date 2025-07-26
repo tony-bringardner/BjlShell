@@ -398,6 +398,16 @@ public interface FileSourceShParserListener extends ParseTreeListener {
 	 */
 	void exitForStatement(FileSourceShParser.ForStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#selectStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelectStatement(FileSourceShParser.SelectStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#selectStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelectStatement(FileSourceShParser.SelectStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link FileSourceShParser#for_loop_control}.
 	 * @param ctx the parse tree
 	 */

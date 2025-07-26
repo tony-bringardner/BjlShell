@@ -41,6 +41,7 @@ public class Template {
 
 	public void addCompetion(DefaultCompletionProvider provider) {
 		String d = description == null ? name : description.isBlank() ? name : description;
+
 		if( code == null || code.isBlank()) {
 			provider.addCompletion(new ShorthandCompletion(provider,name,name,d));
 		} else if( code.indexOf("$") >= 0) {
@@ -48,7 +49,6 @@ public class Template {
 		} else {
 			provider.addCompletion(new ShorthandCompletion(provider,name,code,d));
 		}
-
 	}
 
 	public String getName() {

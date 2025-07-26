@@ -245,6 +245,12 @@ public interface FileSourceShParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitForStatement(FileSourceShParser.ForStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link FileSourceShParser#selectStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelectStatement(FileSourceShParser.SelectStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link FileSourceShParser#for_loop_control}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

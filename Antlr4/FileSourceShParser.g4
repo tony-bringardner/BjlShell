@@ -10,13 +10,14 @@ script: SHEBANG? statement+ EOF;
 
 	
 statement
-    : statement SEMI
+    : stmt_only=statement SEMI
     | backgroundCommand
     | ifStatement
     | mathStatement
     | pipeStatement
     | whileStatement
     | forStatement
+    | selectStatement
     | caseStatement
     | assignStatement
     | functionDefinition
@@ -282,6 +283,10 @@ forStatement
     : FOR ID IN list SEMI? NL? DO statement+ DONE
     | FOR for_loop_control NL? DO statement+ DONE
     ;
+
+selectStatement
+    : SELECT ID (IN list)? SEMI? NL? DO statement+ DONE
+     ;
 
 for_loop_control: LPAREN_LPAREN assignStatement SEMI for_compare SEMI expression RPAREN_RPAREN;
 

@@ -204,6 +204,63 @@ Arguments:
 	}
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
+		String [] entries1 = {
+				"one       ",
+				"two",
+				"three",
+				"four",
+				"five",
+				"six",
+				"seven",
+				"eight",
+				"nine",
+				"ten",
+				"eleven",
+				"twelve",
+				"thirteen",
+				"fourteen",
+				"fifteen",
+				
+		};
+		String [] entries = {
+				"one       ",
+				"two",
+				"three",
+				"four",
+				"five"
+		};
+		
+		int lines = 4;
+		int cols = 40;
+		int maxLen = 0;
+		for(String s : entries) {
+			maxLen = Math.max(maxLen, s.length());
+		}
+		maxLen += 6;
+		
+		int l = lines;
+		int c = 1;
+		
+		if( entries.length > l) {
+			c = cols/maxLen;
+			l = lines / c;
+			
+		}
+		
+		String fmt = "(%2d) %-"+maxLen+"s ";
+		for(int idx = 0; idx < entries.length; idx+=c) {
+			for(int col=0; col< c; col++ ) {
+				int i = idx+col;
+				if( i < entries.length) {
+					System.out.printf(fmt, (i+1),entries[i]);
+				}
+			}
+			System.out.println();
+		}
+		
+		
+	}
+	public static void main5(String[] args) throws IOException, InterruptedException {
 		//String directory = "/Users/tony";
 		 Runtime run  = Runtime.getRuntime();
          String cmd [] = {"vi","test.sh"};
