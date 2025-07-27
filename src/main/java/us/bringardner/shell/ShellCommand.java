@@ -254,6 +254,23 @@ public abstract class ShellCommand {
 
 	public static final char wildcards[] = {'*','?','[','~'};
 
+	public static String removeWildcards(String str) {
+		StringBuilder ret = new StringBuilder();
+		byte [] data = str.getBytes();
+		for (int idx = 0; idx < data.length; idx++) {
+			char c = (char)data[idx];
+			switch (c) {
+			case '*': 
+			case '?':
+			case '~':
+				break;
+			default:
+				ret.append(c);
+			}
+		}
+		return ret.toString();
+	}
+	
 	public List<FileSource>  globOld(ShellContext ctx,String path) throws IOException {
 		List<FileSource> ret = new ArrayList<>();
 		FileSource cwd = null;
@@ -321,7 +338,7 @@ public abstract class ShellCommand {
 		return ret;
 	}
 
-	protected static  boolean hasWildcard(String seg) {
+	public static  boolean hasWildcard(String seg) {
 		for(char c : wildcards) {
 			if( seg.indexOf(c)>=0) {
 				return true;

@@ -178,7 +178,11 @@ public abstract class Statement {
 	public String toString(ShellContext ctx) {
 		StringBuilder ret = new StringBuilder();
 		for(Argument a : getArgs()) {
-			ret.append(""+a.getValue(ctx));
+			try {
+				ret.append(""+a.getValue(ctx));
+			} catch (IOException e) {
+				ret.append(e.toString());
+			}
 		}
 		return ret.toString();
 	}

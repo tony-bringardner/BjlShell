@@ -9,7 +9,7 @@ import us.bringardner.shell.antlr.statement.CommandSubstitutionStatement;
 public class Argument {
 
 	ArgumentContext context;
-	
+
 	public Argument(ArgumentContext ctx) {
 		context = ctx;
 	}
@@ -27,18 +27,18 @@ argument
     | parameter
     ;
 
-    
+
 	 */
-	public Object getValue(ShellContext ctx) {
+	public Object getValue(ShellContext ctx) throws IOException {
 		Object ret = context.getText();
-		
+
 		if( context.ARG_ID()!=null) {
 			ret = context.ARG_ID().getText();
 		} else if( context.ID()!=null) {
 			String name = context.ID().getText();
 			//ret = ctx.getVariable(name);
 			//if( ret == null ) {
-				ret = name;
+			ret = name;
 			//}
 		} else if( context.variable()!= null) {
 			ret = ctx.getVariable(context.variable());			
@@ -49,7 +49,7 @@ argument
 			ret = ctx.expandString(context.string());			
 		} else if(context.parameter()!=null) {
 			Parameter p = new Parameter(context.parameter());
-			
+
 			ret = p.evaluate(ctx);
 		} else if(context.TEXT()!=null) {
 			ret = context.TEXT().getText();
@@ -70,14 +70,16 @@ argument
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if(context.assignStatement()!=null || context.STAR()!=null) {
+		} else if(context.assignStatement()!=null ) {
 			ret = context.getText();			
+		} else if(context.STAR()!=null) {			
+			ret = context.getText();
 		} else {
-			
+
 			throw new RuntimeException("Not a valid argument "+context.getText());
 		}
 		
-		
+
 		return ret;
 	}
 
@@ -95,15 +97,15 @@ argument
 			Argument other = (Argument) obj;
 			return context.getText().equals(other.context.getText());
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		return context.getText();
 	}
-	
-	
-	
+
+
+
 }

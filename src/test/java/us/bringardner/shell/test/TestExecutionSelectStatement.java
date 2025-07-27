@@ -138,5 +138,61 @@ public class TestExecutionSelectStatement extends AbstractConsoleTest {
 		assertEquals(expectErr, err);
 	}
 
-
+	@Test
+	public void testSelectStatent04() throws Exception{
+		String cmd = 
+				 "select fname in *;\n"
+				 + "do\n"
+				 + "	echo \"you picked $fname ($REPLY)\"\n"
+				 + "	break;\n"
+				 + "done\n"
+				;
+		
+		
+		String expectOut = 	"#? you picked AbcFile.php (2)\n";
+		String expectErr = 	
+				    "( 1) AbcFile.js                 \n"
+				  + "( 2) AbcFile.php                \n"
+				  + "( 3) AbcFile.properties         \n"
+				  + "( 4) Folder01                   \n"
+				  + "( 5) Hotel California.txt       \n"
+				  + "";
+		String stdin = "2\n";
+		
+		ExecuteResult res = executeCommand(cmd,stdin);
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode);
+		assertEquals(expectOut, out);
+		assertEquals(expectErr, err);
+	}
+	
+	@Test
+	public void testSelectStatent05() throws Exception{
+		String cmd = 
+				 "select fname in Folder01/*;\n"
+				 + "do\n"
+				 + "	echo \"you picked $fname ($REPLY)\"\n"
+				 + "	break;\n"
+				 + "done\n"
+				;
+		
+		
+		String expectOut = 	"#? you picked Folder01/AbcFile.properties (2)\n";
+		String expectErr = 	
+				  "( 1) Folder01/AbcFile.php                \n"
+				+ "( 2) Folder01/AbcFile.properties         \n"
+				+ "( 3) Folder01/Folder01abc.1              \n"
+				+ "( 4) Folder01/Folder01def.2              \n"
+				+ "( 5) Folder01/Hotel California.txt       \n";
+		String stdin = "2\n";
+		
+		ExecuteResult res = executeCommand(cmd,stdin);
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode);
+		assertEquals(expectOut, out);
+		assertEquals(expectErr, err);
+	}
+	
 }

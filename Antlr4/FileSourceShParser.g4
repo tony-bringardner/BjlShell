@@ -61,9 +61,11 @@ assignStatement
     ;
 
 boolean: TRUE | FALSE;
+path: path_segment? PATH_START PATH_BODY  ;
 
 argument
     :  arg_command_substitution
+    | path
    	| MINUS_MINUS
     | TEXT
     | string
@@ -72,7 +74,7 @@ argument
     | assignStatement
     | variable
     | NUMBER
-    | path
+    
     | mathExpression
     | parameter
     | STAR
@@ -239,9 +241,7 @@ redirectionOperator
 
 
 	
-//path: (SLASH|TILDE|(TILDE SLASH))? path_segment (SLASH (path_segment| NUMBER))* SLASH?  ;
 
-path: path_segment? PATH_START PATH_BODY  ;
 			
 path_segment: TILDE 
 		| ID

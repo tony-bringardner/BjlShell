@@ -483,7 +483,7 @@ $
 		return pause.get();
 	}
 
-	public void enterStatement(Statement stmt) {
+	public void enterStatement(Statement stmt) throws IOException {
 		statementStack.push(stmt);
 		if( console!=null ) {
 			console.debugContext.before(stmt.getContext(), this);
