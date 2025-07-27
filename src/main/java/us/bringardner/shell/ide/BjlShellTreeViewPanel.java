@@ -128,7 +128,7 @@ public class BjlShellTreeViewPanel extends JPanel {
 	private JRadioButton showTextRadioButton;
 	private JRadioButton showTokenRadioButton;
 	private JRadioButton showBothRadioButton;
-	private JTree jtree;
+	
 
 	static {
 
@@ -271,8 +271,7 @@ public class BjlShellTreeViewPanel extends JPanel {
 		JScrollPane scrollPane_2 = new JScrollPane();
 		centerPanel.add(scrollPane_2, BorderLayout.WEST);
 		
-		jtree = new JTree();
-		scrollPane_2.setViewportView(jtree);
+		
 
 
 	}
