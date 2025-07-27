@@ -9,6 +9,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import us.bringardner.io.filesource.FileSource;
+import us.bringardner.shell.Console;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Compare;
@@ -152,25 +153,40 @@ public class SelectStatement extends LoopStatement{
 	int cols = 0;
 
 	private void display(ShellContext sc) {
+		int sz = entries.size();
+		
 		int l = getLines(sc);
 
-
+		l = 11;
 		int c = 1;
 
-		if( entries.size() > l) {
+		if( sz > l) {
 			c = getCols(sc)/maxLen;
-			l /= c;			
+			int tmp = sz / c;
+			if( tmp > l) {
+				l = tmp;
+			}
+			tmp = l % c;
+			if( tmp !=0) {
+				l++;
+			}			
 		}
-
-		String fmt = "(%2d) %-"+maxLen+"s ";
-		for(int idx = 0; idx < entries.size(); idx+=c) {
+		
+		
+		int digits = sz>=100?3:sz>=10?2:1;
+		String fmt = "%"+digits+"d) %-"+maxLen+"s ";
+		for(int line = 0; line < l; line++) {
+			boolean nl = false;
 			for(int col=0; col< c; col++ ) {
-				int i = idx+col;
-				if( i < entries.size()) {
+				int i = line+(col*l);
+				if( i < sz) {
+					nl = true;
 					sc.stderr.printf(fmt, (i+1),entries.get(i));
 				}
 			}
-			sc.stderr.println();
+			if( nl) {
+				sc.stderr.println();
+			}
 		}
 	}
 
