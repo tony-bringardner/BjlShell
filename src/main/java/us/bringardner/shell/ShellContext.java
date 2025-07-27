@@ -111,11 +111,16 @@ public class ShellContext {
 		if( context.SQ_STRING() != null ) {
 			String tmp = context.SQ_STRING().getText();
 			return tmp.substring(1, tmp.length()-1);				
-		} 
+		} else if( context.DQ_STRING() !=null) {
 
 		String tmp = context.DQ_STRING().getText();
 		String ret = FileSourceShPreProcessorVisitorImpl.processString(tmp.substring(1,tmp.length()-1), this);
 		return ret;
+		} else if( context.ESC()!=null) {
+			String tmp = context.ESC().getText().substring(1);
+			return tmp;
+		}
+		throw new RuntimeException("No valid string for "+context.getText());
 	}
 
 

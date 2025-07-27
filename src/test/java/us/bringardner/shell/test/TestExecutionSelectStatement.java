@@ -143,13 +143,13 @@ public class TestExecutionSelectStatement extends AbstractConsoleTest {
 		String cmd = 
 				 "select fname in *;\n"
 				 + "do\n"
-				 + "	echo \"you picked $fname ($REPLY)\"\n"
+				 + "	echo you picked $fname \\($REPLY\\)\n"
 				 + "	break;\n"
 				 + "done\n"
 				;
 		
 		
-		String expectOut = 	"#? you picked AbcFile.php (2)\n";
+		String expectOut = 	"#? you picked AbcFile.php ( 2 )\n";
 		String expectErr = 	
 				    "( 1) AbcFile.js                 \n"
 				  + "( 2) AbcFile.php                \n"

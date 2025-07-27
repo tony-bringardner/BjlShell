@@ -315,7 +315,7 @@ functionDefinition
     ;
 
 
-string : DQ_STRING | SQ_STRING ;
+string : DQ_STRING | SQ_STRING | ESC;
 
 arrayInitializer
     : LPAREN argument* RPAREN
