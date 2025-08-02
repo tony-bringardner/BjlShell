@@ -9,7 +9,6 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import us.bringardner.io.filesource.FileSource;
-import us.bringardner.shell.Console;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Compare;
