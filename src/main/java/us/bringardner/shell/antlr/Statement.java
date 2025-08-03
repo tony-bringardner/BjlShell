@@ -144,7 +144,7 @@ public abstract class Statement {
 	public Statement(ParserRuleContext context) {
 		this.context = context;
 		if(context==null) {
-			throw new RuntimeException("Null context not allowed");
+			throw new RuntimeException("Null context not allowed in "+getClass());
 		}
 	}
 

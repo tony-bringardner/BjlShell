@@ -184,7 +184,7 @@ public class FileSourceShPreProcessorVisitorImpl extends FileSourceShPreProcesso
 					throw new RuntimeException("Invalid command ="+rule);
 				}
 				
-				CommandSubstitutionStatement cs = new CommandSubstitutionStatement(null);
+				CommandSubstitutionStatement cs = new CommandSubstitutionStatement(rule);
 				String val = null;
 				if( cs.execute(cmd, sc)!=0) {
 					val = "Expansion error "+cmd+" exitCode="+cs.getExitCode();
@@ -192,7 +192,7 @@ public class FileSourceShPreProcessorVisitorImpl extends FileSourceShPreProcesso
 					val = cs.getStdout();
 				}
 				
-				chunks.set(idx, val);
+				chunks.add(val);
 				
 
 			} else if (rule instanceof PpexprContext) {

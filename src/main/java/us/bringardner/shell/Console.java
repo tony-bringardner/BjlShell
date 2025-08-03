@@ -29,6 +29,7 @@ import us.bringardner.shell.commands.Alias;
 import us.bringardner.shell.commands.Connect;
 import us.bringardner.shell.commands.Cp;
 import us.bringardner.shell.commands.Echo;
+import us.bringardner.shell.commands.Eval;
 import us.bringardner.shell.commands.Exit;
 import us.bringardner.shell.commands.Export;
 import us.bringardner.shell.commands.Help;
@@ -105,6 +106,7 @@ public class Console extends BaseThread {
 
 	static {
 		commands = new TreeMap<>();
+		registerCommand(new Eval());
 		registerCommand(new History());
 		registerCommand(new Shift());
 		registerCommand(new Unalias());
