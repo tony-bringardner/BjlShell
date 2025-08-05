@@ -72,7 +72,7 @@ argument
 			}
 		} else if(context.assignStatement()!=null ) {
 			ret = context.getText();			
-		} else if(context.STAR()!=null) {			
+		} else if(context.operator()!=null) {			
 			ret = context.getText();
 		} else {
 

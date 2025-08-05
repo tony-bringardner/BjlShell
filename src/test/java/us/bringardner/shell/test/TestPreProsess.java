@@ -228,6 +228,25 @@ public class TestPreProsess {
 		assertEquals(expect, actual);
 		
 	}
+	
+	@Test
+	public void testExpandStringPow01() {
+		ShellContext ctx = new ShellContext(new Console());
+		String expect = "100";
+		String code = "$((10**2))";
+		String actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		assertEquals(expect, actual);
+		
+		expect = "100.0";
+		code = "$((10.0**2))";
+		actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		assertEquals(expect, actual);
+		
+		expect = "100.0";
+		code = "$((10**2.0))";
+		actual = FileSourceShPreProcessorVisitorImpl.processString(code, ctx);
+		assertEquals(expect, actual);
+	}
 
 	@Test
 	public void testExpandStringPlusEq() {

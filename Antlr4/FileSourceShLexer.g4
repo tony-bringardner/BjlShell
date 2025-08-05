@@ -44,7 +44,14 @@ lexer grammar FileSourceShLexer;
 	    return false;
 	  }
 	  
-  
+  	boolean exprEndAhead() {
+		 char nx =  (char)_input.LA(1);
+		 if( nx == ';' || nx == '\n'|| nx == EOF) {
+			 return true;
+		 }		 
+	    return false;
+	 }
+	
 }
 
 
@@ -56,6 +63,7 @@ PATH_START: SLASH {
 
 PARAMETER_START: '${' ->pushMode(ParameterMode);
 
+EXPR_START: 'expr' ->pushMode(ExprMode);
 
 HERE_START:'<<';
 HERE_START_RM_TABS:'<<-';
@@ -76,6 +84,9 @@ GT_EQ:'>=';
 NOT: '!';
 AND: '&&';
 OR:  '||';
+ESC_AND: '\\&&';
+ESC_OR:  '\\||';
+
 
 
 NUMBER :
@@ -163,6 +174,7 @@ DOT_DOT:'..';
 PERC:'%';
 PLUS:'+';
 STAR:'*';
+POW:'**';
 DO:'do';
 EQ:'=';
 EQUALITY:'=='|'-eq';
@@ -238,6 +250,10 @@ PARAMETER_END
  : {parameterEndAhead()}? '}' -> popMode
  ;
 
+mode ExprMode;
+EXPR_BODY: ({!exprEndAhead()}? . )+ ;
+ 
+EXPR_END: {exprEndAhead()}? (';'|'\n'|EOF) -> popMode;
  
 
 

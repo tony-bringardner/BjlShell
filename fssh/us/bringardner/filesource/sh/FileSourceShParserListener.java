@@ -88,6 +88,16 @@ public interface FileSourceShParserListener extends ParseTreeListener {
 	 */
 	void exitArgument(FileSourceShParser.ArgumentContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperator(FileSourceShParser.OperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#operator}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperator(FileSourceShParser.OperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link FileSourceShParser#commandStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -547,6 +557,26 @@ public interface FileSourceShParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArg_command_substitution(FileSourceShParser.Arg_command_substitutionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#exprStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExprStatement(FileSourceShParser.ExprStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#exprStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExprStatement(FileSourceShParser.ExprStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FileSourceShParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr(FileSourceShParser.ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FileSourceShParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr(FileSourceShParser.ExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FileSourceShParser#parameter}.
 	 * @param ctx the parse tree

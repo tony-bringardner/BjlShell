@@ -48,6 +48,7 @@ factor
 		Add("+"),
 		Subtract("-"),
 		Multiply("*"),
+		Power("**"),
 		Divide(":^:"),
 		Increment("++"),
 		Decrement("--"),
@@ -215,6 +216,7 @@ factor
 		Object term2 = evaluateTerm(term.term(), ctx2);
 		Operator op = getOperator(term.op.getText());
 		switch (op) {
+		case Power:ret = power(term2,factor); break;
 		case Multiply:ret = multiply(term2,factor); break;
 		case Divide:	ret = divide(term2,factor); break;
 		case Modulo:ret = modulo(term2,factor); break;
@@ -246,6 +248,20 @@ factor
 			ret = ((Number)v1).intValue()/((Number)v2).intValue();
 		}  else {
 			throw new RuntimeException("divide What do with "+v1.getClass());
+		}
+		
+		return ret;
+
+	}
+	
+	private Object power(Object v1, Object v2) {
+		Object ret = null;
+		if (v1 instanceof Double || v2 instanceof Double) {
+			ret = Math.pow(((Number)v1).doubleValue(), ((Number)v2).doubleValue());
+		} else 	if (v1 instanceof Integer || v2 instanceof Integer) {
+			ret = (int)Math.pow(((Number)v1).doubleValue(), ((Number)v2).doubleValue());
+		}  else {
+			throw new RuntimeException("power What do with "+v1.getClass());
 		}
 		
 		return ret;

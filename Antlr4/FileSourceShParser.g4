@@ -33,6 +33,7 @@ statement
     | compareStatement
     | statement_group // Includes parenthesized groups
     | command_substitution
+    | exprStatement
     
     ;
 
@@ -66,21 +67,33 @@ path: path_segment? PATH_START PATH_BODY  ;
 argument
     :  arg_command_substitution
     | path
-   	| MINUS_MINUS
-    | TEXT
+   	| TEXT
     | string
     | ARG_ID
     | ID 
     | assignStatement
     | variable
-    | NUMBER
-    
+    | NUMBER    
     | mathExpression
     | parameter
-    | STAR
+    | operator
 
     ;
 
+operator: MINUS|PLUS|DIVIDE|PERC|STAR
+		|MINUS_MINUS|PLUS_PLUS|EQUALITY|NOT_EQ
+		| MINUS_ASSIGN
+		| STAR_ASSIGN
+		| DIV_ASSIGN
+		| MOD_ASSIGN
+		| ESC LT
+		|LT_EQ
+		|ESC GT
+		|GT_EQ
+		|NOT
+		|ESC_AND
+		|ESC_OR
+		;
 
 commandStatement
     :	redirect1=redirect? command (argument)* hereDocument redirect2=redirect? CMD_TERMINATOR? 
@@ -180,7 +193,7 @@ expression
 
 term
     : factor
-    | term op=(STAR | DIVIDE | PERC) factor
+    | term op=(STAR | DIVIDE | PERC | POW) factor
     ;
 
 
@@ -349,8 +362,11 @@ arg_command_substitution:
 			| '`' ~'`'* '`'
 			;
 
-parameter: PARAMETER_START PARAMETER_BODY PARAMETER_END
-		;
+exprStatement: expr;
+
+expr: EXPR_START EXPR_BODY (EXPR_END|EOF);
+
+parameter: PARAMETER_START PARAMETER_BODY PARAMETER_END;
 		
 parameter1:
      (NOT|PIPE)? ID parameter_index?  parameter_body 
