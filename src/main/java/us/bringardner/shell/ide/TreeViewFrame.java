@@ -54,6 +54,7 @@ import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import us.bringardner.filesource.sh.ExprParser;
 import us.bringardner.filesource.sh.FileSourceShLexer;
 import us.bringardner.filesource.sh.FileSourceShParser;
 import us.bringardner.filesource.sh.FileSourceShPreProcessorBraceLexer;
@@ -344,7 +345,7 @@ public class TreeViewFrame extends JFrame {
 				actionParserClassChanged();
 			}
 		});
-		parserClassComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"FSSH", "String PP","Brace PP"}));
+		parserClassComboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"FSSH", "String PP","Brace PP","Expr"}));
 		parserClassComboBox.setSelectedIndex(0);
 		controlPanel.add(parserClassComboBox);
 		controlPanel.add(rulesComboBox);
@@ -481,10 +482,14 @@ public class TreeViewFrame extends JFrame {
 				lexerClass = FileSourceShPreProcessorLexer.class;
 				parserClass= FileSourceShPreProcessorParser.class;
 				start = "ppcode";
-			}  else {
+			}  else if( parserClassComboBox.getSelectedIndex()==2){
 				lexerClass = FileSourceShPreProcessorBraceLexer.class;
 				parserClass= FileSourceShPreProcessorBraceParser.class;
 				start = "expansion_list";
+			}else {
+				lexerClass = FileSourceShLexer.class;
+				parserClass= ExprParser.class;
+				start = "equation";
 			}
 			
 			try {

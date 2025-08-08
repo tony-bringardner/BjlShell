@@ -254,4 +254,32 @@ public class TestExecutionForStatement extends AbstractConsoleTest {
 		assertEquals("", err);
 	}
 
+	@Test
+	public void testForStatent04_1() throws Exception{
+		String cmd = 
+				 "for file in *\n"
+				 + "do \n"
+				 + " echo \"$file\"\n"
+				 + "done"
+				;
+		
+		String expect [] = {"Folder01"
+				, "Hotel California.txt"
+				, "AbcFile.js"
+				, "AbcFile.properties"
+				, "AbcFile.php"
+		};
+		
+		ExecuteResult res = executeCommand(cmd,"");
+		String out = new String(res.bao.toByteArray());
+		String err = new String(res.bae.toByteArray());
+		assertEquals(0, res.exitCode,err);
+		String lines[] = out.split("\n");
+		assertEquals(5, lines.length,err);
+		for(String val : expect) {
+			assertTrue(out.contains(val));
+		}
+		
+		assertEquals("", err);
+	}
 }

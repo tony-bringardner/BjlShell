@@ -55,7 +55,7 @@ public class CommandSubstitutionStatement extends Statement{
 			tmp.append(context.getChild(idx).getText());
 		}
 		String code = tmp.toString();
-		execute(code,primary);
+		exitCode =execute(code,primary);
 			
 		return exitCode;
 	}
@@ -81,6 +81,11 @@ public class CommandSubstitutionStatement extends Statement{
 			exitCode = 1;
 		} finally {
 			stdout = new String(bao.toByteArray());
+			//Bash performs command substitution by executing command in a subshell environment and replacing the command substitution with the standard output of the command, 
+			//with any trailing newlines deleted
+			while(stdout.endsWith("\n")) {
+				stdout = stdout.substring(0, stdout.length()-1);
+			}
 			stderr = new String(bae.toByteArray());
 			if( error !=null) {
 				stderr += error.toString();

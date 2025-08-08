@@ -428,7 +428,6 @@ public class CommandStatement extends Statement{
 					 * If a match is found, that built-in is invoked.
 					 */
 					ShellCommand cmd = Console.commands.get(name);
-
 					if( cmd != null ) {
 						cmd.setArgs(args);
 						ret = cmd.process(ctx);

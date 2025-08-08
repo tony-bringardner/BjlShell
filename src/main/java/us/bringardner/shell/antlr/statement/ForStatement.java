@@ -1,10 +1,14 @@
 package us.bringardner.shell.antlr.statement;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import us.bringardner.io.filesource.FileSource;
+import us.bringardner.io.filesource.fileproxy.FileProxy;
+import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Argument;
 import us.bringardner.shell.antlr.Compare;
@@ -74,14 +78,41 @@ public class ForStatement extends LoopStatement{
 		}
 	}
 	
+	private List<String> argsToString(ShellContext ctx) throws IOException {
+		List<String> ret = new ArrayList<>();
+		
+		for (int idx = 0; idx < args.length; idx++) {
+
+			Argument a = args[idx];
+			String val = ""+a.getValue(ctx);
+			
+			//TODO: probably need a more comprehensive way to generate file lists
+			if( a.getContext().path() != null || (a.getContext().operator() != null && a.getContext().operator().getText().equals("*")) ) {
+
+				List<FileSource> list = ShellCommand.getFiles(ctx, val);
+				if( list.size()>0) {
+					for(FileSource file : list) {
+						ret.add(file.getAbsolutePath());						
+					}		
+				} else {
+					ret.add(val);
+				}
+			} else {
+				ret.add(val);
+			}
+		}
+		return ret;
+
+	}
 	protected int executeShellStyle(ShellContext sc) throws IOException {
 		int ret = 0;
 		ShellContext.LoopControl tmp = null;
-		for(Argument arg : args ) {
+		List<String> sargs = argsToString(sc);
+		for(String arg : sargs ) {
 			if(ShellContext.LoopControl.Break.equals(tmp)) {
 				break;
 			}
-			Object val = arg.getValue(sc);
+			Object val = arg;
 			sc.setLocalVariable(varName, val);	
 			
 			

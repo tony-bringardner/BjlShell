@@ -10,7 +10,7 @@ import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 
 public class Cd extends ShellCommand{
-	static String name = "pwd";
+	static String name = "cd";
 	// physical 
 	static String help = "change the current directory\n"
 			+ "\t [-L] (default) Change the current working directory\n"
@@ -36,11 +36,11 @@ public class Cd extends ShellCommand{
 		String path = "~";
 		
 		if( args.size()>0) {
-			if( args.size()>1) {
+			if( args.size()>2) {
 				ctx.stderr.println("cd: too many args: "+path);
 				return -1;
 			}			
-			path = args.get(0);
+			path = args.get(1);
 		}
 		
 		List<FileSource> dirs = getFiles(ctx, path);

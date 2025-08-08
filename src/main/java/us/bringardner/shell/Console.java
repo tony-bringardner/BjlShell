@@ -26,8 +26,10 @@ import us.bringardner.shell.antlr.FileSourceShVisitorImpl;
 import us.bringardner.shell.antlr.Statement;
 import us.bringardner.shell.antlr.signal.ExitException;
 import us.bringardner.shell.commands.Alias;
+import us.bringardner.shell.commands.Cd;
 import us.bringardner.shell.commands.Connect;
 import us.bringardner.shell.commands.Cp;
+import us.bringardner.shell.commands.DirStack;
 import us.bringardner.shell.commands.Echo;
 import us.bringardner.shell.commands.Eval;
 import us.bringardner.shell.commands.Exit;
@@ -106,6 +108,10 @@ public class Console extends BaseThread {
 
 	static {
 		commands = new TreeMap<>();
+		commands.put("dirs", new DirStack());
+		commands.put("popd", new DirStack());
+		commands.put("pushd", new DirStack());
+		registerCommand(new Cd());
 		registerCommand(new Eval());
 		registerCommand(new History());
 		registerCommand(new Shift());

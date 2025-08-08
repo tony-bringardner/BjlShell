@@ -205,6 +205,7 @@ REDIRECT_TO_ID:REDIRECT_FROM_ID|MINUS;
 DIGIT: [0-9];
 SPECIAL_UNIX: [-_+=~];
 SPECIAL_WINDOWS: [-_+=~];
+POS:'^';
 
 ARG_ID  :('-'|'+')+[a-zA-Z_]LETTER_OR_DIGIT* ;
 ID      :   [a-zA-Z_]LETTER_OR_DIGIT* ;
