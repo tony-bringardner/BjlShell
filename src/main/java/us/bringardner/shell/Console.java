@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,7 +80,7 @@ public class Console extends BaseThread {
 			this.ctx = ctx;
 			this.action = action;
 		}
-		
+
 	}
 
 	public enum Option {
@@ -189,7 +190,7 @@ delimiter
 	public static Map<String,ShellCommand> commands;
 
 	public List<Job> jobs = new ArrayList<>();
-	
+
 
 	boolean eof = false;
 	Map<String,Object> alias = new TreeMap<>();
@@ -205,7 +206,7 @@ delimiter
 	private Map<String,Object> environmentVariables = new TreeMap<>();
 	DebugContext debugContext = new DebugContext();
 	private int lastPid = 0;
-	
+
 	static {
 		commands = new TreeMap<>();
 		commands.put("dirs", new DirStack());
@@ -229,7 +230,7 @@ delimiter
 
 		registerCommand(new Jobs());
 		registerCommand(new Kill());
-		
+
 		registerCommand(new Ln());
 		registerCommand(new Ls());
 
@@ -255,7 +256,7 @@ delimiter
 		registerCommand(new Unmount());
 
 		registerCommand(new Wc());
-		
+
 		registerSignals();
 	}
 
@@ -271,7 +272,7 @@ delimiter
 		new Thread(()->{
 			//System_out.println("Signal fired "+signum);
 			List<ConsoleSignalHandler> tmp = osSignalHandlers.get(signum);
-			
+
 			if( tmp != null) {
 				List<ConsoleSignalHandler> tmp2 = new ArrayList<>();
 				for(int idx=0,sz=tmp.size(); idx < sz; idx++) {
@@ -288,10 +289,10 @@ delimiter
 					}
 				}
 			}
-			
+
 		}).start();
-		
-		
+
+
 	}
 
 	private static void registerSignals() {
@@ -324,7 +325,7 @@ delimiter
 		public Throwable error;
 		public JobState state;
 		public int jobNumber;
-		
+
 		public Job(int jobNumber,CommandThread thread) {
 			this.jobNumber = jobNumber;
 			child = thread;			
@@ -363,18 +364,18 @@ delimiter
 				state = JobState.Notified;
 			}
 		}
-		
+
 		public String toString() {
-				return child.toString();
+			return child.toString();
 		}
 
 		public void raiseSignal(Integer signum) {
-			
-			
+
+
 		} 
 	}
-	
-	
+
+
 	public static class HistoryEntry {
 		public long time;
 		public boolean  saved;
@@ -441,7 +442,7 @@ delimiter
 				ctx.enterCommand();
 				exitCode = cmd.process(ctx);
 				ctx.exitCommand();
-				
+
 			} catch (Throwable e) {
 				error = e;
 			}
@@ -472,23 +473,23 @@ delimiter
 					return;
 				}
 			}
-			
+
 			System.exit(exitCode);
 		}
 	}
-	
+
 	public static void main(String args[]) throws IOException {
 
 		try {
-			 Runtime.getRuntime().addShutdownHook(new Thread()
-		        {
-		            @Override
-		            public void run()
-		            {
-		                System.out.println("Shutdown hook ran!");
-		            }
-		        });
-			 
+			Runtime.getRuntime().addShutdownHook(new Thread()
+			{
+				@Override
+				public void run()
+				{
+					System.out.println("Shutdown hook ran!");
+				}
+			});
+
 
 			Console c = new Console();
 			ShellContext ctx = new ShellContext(c);
@@ -497,7 +498,7 @@ delimiter
 			c.registerHandler(ctx,new Signal("TERM"), "echo -n '^\\ '");
 			c.registerHandler(ctx,new Signal("TSTP"), "echo -n '^Z '");
 			c.setStdIn(System.in);
-			
+
 			int ret = c.execute(args);
 
 			if(ret==0 && c.isInteractive) {
@@ -525,7 +526,7 @@ delimiter
 		}		
 	}
 
-	
+
 	/**
 	 * Only used for testing...
 	 * @param args
@@ -539,7 +540,7 @@ delimiter
 
 		}
 	}
-	
+
 	public int getLastPid() {
 		return lastPid;
 	}
@@ -680,29 +681,29 @@ delimiter
 			variables.put(VARIABLE_HISTCHARS, "!^#");
 			positionalParameters.add("fssh");
 			options.add(Option.DoBraceExpantion);
-			
+
 			loadProfile();
-			
-		
+
+
 		} catch (IOException e) {
 		}
 	}
 
 	public void loadProfile() {
 		try {
-			
+
 			FileSource file = homeDir.getChild(".fsshrc");
 			if( file.exists() && file.canGroupRead()) {
 				//TODO: remove one testing is complete
 				stdIn = System.in;
 				executeUsingAntlr("source "+file);
 			}
-			
+
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private static void registerCommand(ShellCommand cmd) {
@@ -1626,6 +1627,8 @@ delimiter
 		this.adminMessage = adminMessage;
 	}
 
+	AtomicReference<Job> currentJob = new AtomicReference<>();
+
 	public int executeUsingAntlr(String code)  {
 		//TODO: REmove after testing is complete
 		if( stdIn == null) {
@@ -1642,8 +1645,7 @@ delimiter
 			sc.stdin = new NativeKeyboard();
 		}
 
-		Statement lastStatement=null;
-		
+
 		try {
 
 			if( isOptionEnabled(Option.PrintLinesAsRead)) {
@@ -1656,24 +1658,50 @@ delimiter
 				sc.stdout.println(ppCode);
 			}
 
-			List<Statement> stmts = FileSourceShVisitorImpl.parse(ppCode);
-			if( stmts.size()>0) {				
-				for(Statement stmt : stmts) {
-					lastStatement=stmt;
-					handleMetaSignal(ConsoleMetaSignal.Debug,stmt);
-					ret = stmt.process(sc);
-					if( ret!=0) {
-						handleMetaSignal(ConsoleMetaSignal.Err,stmt);
-						if(isInteractive && options.contains(Option.ExitImediately)) {
-							Console.exit(this,ret);
-						}
+			final List<Statement> stmts = FileSourceShVisitorImpl.parse(ppCode);
+			if( stmts.size()>0) {
+				Job j = new Job(-1, new CommandThread(sc, new Statement(null) {
+
+					@Override
+					protected int execute(ShellContext ctx) throws IOException {
+						int ret = 0;
+						for(Statement stmt : stmts) {
+							handleMetaSignal(ConsoleMetaSignal.Debug);
+							ret = stmt.process(sc);							
+						}		
 						return ret;
+					}
+
+				}));
+				j.start();
+				while(!j.hasStarted()) {
+					try {
+						Thread.sleep(10);	
+					} catch (Exception e) {
 					}					
+				}
+				
+				currentJob.set(j);
+				while(currentJob.get().isRunning()) {
+					try {
+						Thread.sleep(10);	
+					} catch (Exception e) {
+					}
+				}
+				
+				
+				ret = currentJob.get().exitCode;
+				if( ret!=0) {
+					handleMetaSignal(ConsoleMetaSignal.Err);
+					if(isInteractive && options.contains(Option.ExitImediately)) {
+						Console.exit(sc.console,ret);
+					}
+					return ret;
 				}
 			}
 		} catch(ExitException e) {
 			ret = e.exitCode;
-			handleMetaSignal(ConsoleMetaSignal.Exit,lastStatement);
+			handleMetaSignal(ConsoleMetaSignal.Exit);
 			sc.stderr.println(e);
 			stop();
 
@@ -1691,7 +1719,7 @@ delimiter
 			ret = 1;
 			sc.stderr.println(e);
 			logError("", e);
-			handleMetaSignal(ConsoleMetaSignal.Err,lastStatement);
+			handleMetaSignal(ConsoleMetaSignal.Err);
 		}
 
 		return ret;
@@ -1700,7 +1728,7 @@ delimiter
 	private Stack<ConsoleMetaSignal> inProcess = new Stack<>();
 
 
-	private void handleMetaSignal(ConsoleMetaSignal signal, Statement stmt) {
+	private void handleMetaSignal(ConsoleMetaSignal signal) {
 
 		if( !inProcess.contains(signal)) {			
 			List<String> actions = signalHandlers.get(signal);
@@ -1769,7 +1797,7 @@ delimiter
 	}
 
 	private static Map<Integer,List<ConsoleSignalHandler>> osSignalHandlers = new TreeMap<>();
-	
+
 	public void registerHandler(ShellContext ctx,final Signal signal, String action) {
 		ConsoleSignalHandler handler = new ConsoleSignalHandler(ctx,action);
 		List<ConsoleSignalHandler> actions = osSignalHandlers.get(signal.getNumber());
@@ -1801,6 +1829,6 @@ delimiter
 		lastPid = job.pid;
 	}
 
-	
+
 
 }
