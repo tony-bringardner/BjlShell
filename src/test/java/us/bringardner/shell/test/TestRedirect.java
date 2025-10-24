@@ -8,8 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
@@ -21,7 +19,7 @@ import us.bringardner.shell.Console;
 
 
 @TestMethodOrder(OrderAnnotation.class)
-public class TestExecutionExternal {
+public class TestRedirect {
 
 	private static File testFilesDir;
 	public static boolean debug = false;
@@ -93,14 +91,16 @@ public class TestExecutionExternal {
 	
 	
 	@Test
-	public void testExternal01() throws Exception{
-		String cmd = "/usr/bin/wc -w\n"
+	public void testRedirect01() throws Exception{
+		String cmd = "/usr/bin/wc <<EOF\n"
+				+ "the quick brown fox jumped over the lasy dog\n"
+				+ "EOF\n"
 				;
 
 		String expectOut = 
-				"       2\n"
+				"       1       9      45\n"
 				;
-		String stdIn = "one two";
+		String stdIn = "the quick brown fox jumped over the lasy dog";
 		String expectErr = "";
 		int exitCode = 0;
 		
@@ -110,12 +110,36 @@ public class TestExecutionExternal {
 	}
 	
 	@Test
-	public void testExternal02() throws Exception{
-		String cmd = "/usr/bin/wc\n"
+	public void testRedirect01_2() throws Exception{
+		String cmd = "/usr/bin/wc <<EOF\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "EOF\n"
 				;
 
 		String expectOut = 
-				"       0       9      44\n"
+				"       1       9      46\n"
+				;
+		String stdIn = "the quick brown fox jumped over the lasy dog";
+		String expectErr = "";
+		int exitCode = 0;
+		
+		
+		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
+		
+	}
+	
+	@Test
+	public void testRedirect01_3() throws Exception{
+		String cmd = "/usr/bin/wc <<-EOF\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "EOF\n"
+				;
+
+		String expectOut = 
+				"       4      36     180\n"
 				;
 		String stdIn = "the quick brown fox jumped over the lasy dog";
 		String expectErr = "";
@@ -127,68 +151,93 @@ public class TestExecutionExternal {
 	}
 
 	@Test
-	public void testExternal03() throws Exception{
+	public void testRedirect01_4() throws Exception{
+		String cmd = "/usr/bin/wc <<EOF\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "\tthe quick brown fox jumped over the lasy dog\n"
+				+ "EOF\n"
+				;
+
+		//System.out.println(cmd);
+		String expectOut = 
+				"       4      36     184\n"
+				;
+		String stdIn = "the quick brown fox jumped over the lasy dog";
+		String expectErr = "";
+		int exitCode = 0;
+		
+		
+		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
+		
+	}
+	
+	@Test
+	public void testRedirect01_5() throws Exception{
+		String cmd = 
+				"text=\"the quick brown fox jumped over the lasy dog\"\n"
+				+ "/usr/bin/wc <<EOF\n"
+				+ "\t$text\n"
+				+ "EOF\n"
+				;
+
+		String expectOut = 
+				"       1       9      46\n"
+				;
+		String stdIn = "the quick brown fox jumped over the lasy dog";
+		String expectErr = "";
+		int exitCode = 0;
+		
+		
+		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
+		
+	}
+	
+	@Test
+	public void testRedirect01_6() throws Exception{
+		String cmd = "/usr/bin/wc <<EOF01\n"
+				+ "the quick brown fox jumped over the lasy dog\n"
+				+ "EOF01\n"
+				;
+
+		String expectOut = 
+				"       1       9      45\n"
+				;
+		String stdIn = "the quick brown fox jumped over the lasy dog";
+		String expectErr = "";
+		int exitCode = 0;
+		
+		
+		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
+		
+	}
+
+
+
+	@Test
+	public void testRedirect02() throws Exception{
 		setup("WcTestFiles");
-		String path = testFilesDir.getAbsolutePath();
-		
-		String cmd = "/usr/bin/wc -Lclw *\n"
+		String cmd = "/usr/bin/wc -Lclw < AbcFile.js\n"
 				;
 
-		String expectOut = String.format(
-				""
-				+ "      45     168    1547      79 .*/WcTestFiles/AbcFile.js\n"
-				+ "     156     537    3710      86 .*/WcTestFiles/AbcFile.php\n"
-				+ "      45     314    2048      76 .*/WcTestFiles/AbcFile.properties\n"
-				+ "     122     679    4958     126 .*/WcTestFiles/AbcFile.txt\n"
-				+ "     368    1698   12263     126 total\n"
-				+ ""
-				,path,path,path,path);
-		
+		String expectOut = "      45     168    1547      79\n";
 		String stdIn = "";
 		String expectErr = "";
 		int exitCode = 0;
 		
 		
-		ExecuteResult ret = executeCommand(cmd,stdIn,exitCode);
-		String out = new String(ret.bao.toByteArray());
-		Pattern p = Pattern.compile(expectOut);
-		Matcher m = p.matcher(out);
-		boolean ok = m.matches();
-		assertTrue(ok);
-		String err = new String(ret.bae.toByteArray());
-		assertEquals(expectErr, err);
-		
+		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
 		
 	}
-	
+
 	@Test
-	public void testExternal04() throws Exception{
+	public void testRedirect03() throws Exception{
 		setup("WcTestFiles");
-		
-		String cmd = "/usr/bin/wc -Lclw AbcFile.js\n"
+		String cmd = "< AbcFile.js wc -Lclw \n"
 				;
 
-		String expectOut = "      45     168    1547      79 AbcFile.js\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
-		
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-		
-	}
-	
-	@Test
-	public void testExternal04_1() throws Exception{
-		
-		
-		String cmd = "set one two\n"
-				+ "echo $*\n"
-				;
-
-		String expectOut = "one two\n";
-		
+		String expectOut = "      45     168    1547      79\n";
 		String stdIn = "";
 		String expectErr = "";
 		int exitCode = 0;
@@ -199,149 +248,25 @@ public class TestExecutionExternal {
 	}
 
 	@Test
-	public void testExternal04_2() throws Exception{
+	public void testRedirect04() throws Exception{
+		File dir = new File("target/logdir").getCanonicalFile();
+		if( !dir.exists()) {
+			assertTrue(dir.mkdirs());
+		}
 		
+		File logFile = new File(dir,"log.txt");
+		if( logFile.exists()) {
+			assertTrue(logFile.delete());
+		}
 		
-		String cmd = "set one -two\n"
-				+ "echo $*\n"
-				;
-
-		String expectOut = "one -two\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
-		
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-		
-	}
-	@Test
-	public void testExternal04_3() throws Exception{
-		String cmd = "set -One -two\n"
-				+ "echo $*\n"
-				;
-
-		String expectOut = "";
-		String stdIn = "";
-		String expectErr = "fssh 1,3: -O: invalid option\n";
-		int exitCode = 1;
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-	}
-
-	@Test
-	public void testExternal04_4() throws Exception{
-		String cmd = "set -o kbecho\n"
-				
+		String cmd = "echo \"something to log\" > "+logFile.getCanonicalPath()+"\n";
 				;
 
 		String expectOut = "";
 		String stdIn = "";
 		String expectErr = "";
 		int exitCode = 0;
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-	}
-	
-	
-	@Test
-	public void testExternal05() throws Exception{
-		setup("ExternalTestFiles");
 		
-		String cmd = "test01.sh\n"
-				;
-
-		String expectOut = "hello\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
-		
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-		
-	}
-	
-	@Test
-	public void testExternal06() throws Exception{
-		setup("ExternalTestFiles");
-		
-		String cmd = "test01.sh dude\n"
-				;
-
-		String expectOut = "hello dude\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);		
-	}
-
-	@Test
-	public void testExternal07() throws Exception{
-		setup("ExternalTestFiles");
-		
-		String cmd = "test02.sh dude\n"
-				;
-
-		String expectErr = "java.io.IOException: permission denied: test02.sh\n";
-		
-		String stdIn = "";
-		String expectOut = "";
-		int exitCode = 1;
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);		
-	}
-
-	@Test
-	public void testExternal08() throws Exception{
-		setup("ExternalTestFiles");
-		
-		String cmd = "sh test02.sh dude\n";
-		String expectOut = "hello dude\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
-		
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-		cmd = "sh ./test02.sh dude\n";
-		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
-	}
-
-	@Test
-	public void testExternal09() throws Exception{
-		setup("ExternalTestFiles");
-		String [] args = {
-				"-ea ",
-				 "-e",
-				 "+ea",
-				 "echo",
-				 "hello",
-				  "dude\n"
-				};
-		
-		String in="";
-		String out="hello dude\n";
-		String err="";
-		
-		executeCommand(args, in, 0, out, err);
-		
-		
-		
-		
-	}
-
-	@Test
-	public void testExternal10() throws Exception{
-		setup("ExternalTestFiles");
-		
-		String cmd[] = {"test03.fssh","dude"};
-		String expectOut = "hello dude\n";
-		
-		String stdIn = "";
-		String expectErr = "";
-		int exitCode = 0;
 		
 		executeCommand(cmd,stdIn,exitCode,expectOut,expectErr);
 		
