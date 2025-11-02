@@ -11,37 +11,26 @@ import us.bringardner.shell.antlr.statement.JobControlStatement;
 import us.bringardner.shell.job.IJob;
 import us.bringardner.shell.job.JobManager;
 
-public class Wait extends ShellCommand{
-	static String name = "wait";
-	static String help = "wait [-fn] [-p varname] [id ...]\n"
-			+ "Wait until the child process specified by each id exits and return the exit status of the last id."
-			+ " Each id may be a process ID pid or a job specification jobspec; if a jobspec is supplied, wait waits for all processes in the job.\n"
+public class Disown extends ShellCommand{
+	static String name = "disown";
+	static String help = "disown [-ar] [-h] [id ...]\n"
+			+ "Without options, remove each id from the table of active jobs. Each id may be a job specification jobspec or a process ID pid;"
+			+ " if id is a pid, disown uses the job containing pid as jobspec.\n"
 			+ "\n"
-			+ "If no options or ids are supplied, wait waits for all running background jobs and the last-executed process substitution,"
-			+ " if its process id is the same as $!, and the return status is zero.\n"
+			
+			+ "If the -h option is supplied, disown does not remove the jobs corresponding to each id from the jobs table,"
+			+ " but rather marks them so the shell does not send SIGHUP to the job if the shell receives a SIGHUP.\n"
 			+ "\n"
-
-			+ "If the -n option is supplied, wait waits for any one of the ids or, if no ids are supplied, any job or process substitution,"
-			+ " to complete and returns its exit status."
-			+ " If none of the supplied ids is a child of the shell,"
-			+ " or if no arguments are supplied and the shell has no unwaited-for children, the exit status is 127.\n"
+			
+			+ "If no id is supplied, the -a option means to remove or mark all jobs;"
+			+ " the -r option without an id argument removes or marks running jobs."
+			+ " If no id is supplied, and neither the -a nor the -r option is supplied, disown removes or marks the current job.\n"
 			+ "\n"
-
-			+ "Supplying the -f option, when job control is enabled, forces wait to wait for each id to terminate before returning its status,"
-			+ " instead of returning when it changes status.\n"
-			+ "\n"
-
-			+ "If the -p option is supplied, wait assigns the process or job identifier of the job for which the exit status is returned to the variable"
-			+ " varname named by the option argument. The variable, which cannot be readonly, will be unset initially, before any assignment."
-			+ " This is useful only when used with the -n option.\n"
-			+ "\n"
-
-			+ "If none of the ids specify one of the shell’s an active child processes, the return status is 127."
-			+ " If wait is interrupted by a signal, any varname will remain unset, and the return status will be greater than 128,"
-			+ " as described above (see Signals). Otherwise, the return status is the exit status of the last id."
+			
+			+ "The return value is 0 unless an id does not specify a valid job"
 			;
 
-	public Wait() {
+	public Disown() {
 		super(name, help);
 	}
 
