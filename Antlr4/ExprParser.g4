@@ -1,19 +1,35 @@
-parser grammar ExprParser;
+parser  grammar ExprParser;
 
 
 options {
-   tokenVocab = FileSourceShLexer;
+   tokenVocab = ExprLexer;
 }
 
+program: statement+;
+
+statement:WS* statement_type WS* statment_terminator;
+
+statement_type: 
+		command
+		| assingment
+		;
+
+statment_terminator: (EOF|NL|SEMI);
+		
+command: 	command_name (WS* arguments=argument)*;
+
+argument: 	expr;
+command_name: expr;
+
+assingment: expr WS* EQ WS* expr;
 		
 // ANTLR4 : Left recursion!
 // Operator precedence matches order of definition
-expr   	: 	function_call
-		|   array_element
-		| 	elment_array=expr LSQUARE elment_index=expr RSQUARE (LSQUARE elment_indexes=expr RSQUARE)*
+expr   	: 	
+			value
 		|	op=MINUS unaryMinus=expr
-		|	op='+' 	 unaryPlus=expr 
-		| 	op='!' 	 unaryNot=expr 
+		|	op=PLUS	 unaryPlus=expr 
+		| 	op=NOT 	 unaryNot=expr 
 		
 		| 	left=expr  op=( STAR | SLASH )  right=expr       	
       	| 	left=expr  op=( PLUS | MINUS )  right=expr 
@@ -23,25 +39,30 @@ expr   	: 	function_call
       	| 	left=expr  op= EQUALITY   right=expr
       	| 	left=expr  op= (OR | AND)   right=expr
       	| 	ternaryTest=expr  QUESTION ternaryTrue=expr AND ternaryFalse=expr
-      	| 	'(' single=expr ')' 
-      	| 	ID
-      	| 	constant
+      	| 	LPAREN single=expr RPAREN 
        	;
-       	
+
+	
+value:
+		 constant 
+		|  array_element
+		| VARIABLE		 
+		;
+
+			
 array_element:
 			ID LSQUARE expr RSQUARE (LSQUARE expr RSQUARE)*
 		|	ID LSQUARE expr RSQUARE       	
 		;
 		
-constant :		
-		 	NUMBER  	
-	  
+constant :
+		 	NUMBER
+		 	| string  	
+	  		| boolean
+	  		| path
 		;
 
-function_call:
-			ID LPAREN arguments  RPAREN 			
-			;
-			
-arguments : expr (COMMA expr);
+string: DQ_STRING | SQ_STRING | ESC | TEXT;
+boolean: TRUE | FALSE;
+path: (PATH|ID)+	;
 
-					

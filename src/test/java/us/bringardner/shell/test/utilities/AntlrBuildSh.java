@@ -13,7 +13,8 @@ public class AntlrBuildSh {
 		String out=file.getAbsolutePath()+"/fssh/us/bringardner/filesource/sh";
 		String src = file.getAbsolutePath()+"/Antlr4";
 
-		String [] arg2 = {"-listener","-visitor","-o",out,"-package",
+		String [] arg2 = {
+				"-listener","-visitor","-o",out,"-package",
 				"us.bringardner.filesource.sh",
 				src+"/FileSourceShLexer.g4",
 				src+"/FileSourceShParser.g4"

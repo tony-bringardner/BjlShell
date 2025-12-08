@@ -54,6 +54,7 @@ import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import us.bringardner.filesource.sh.ExprLexer;
 import us.bringardner.filesource.sh.ExprParser;
 import us.bringardner.filesource.sh.FileSourceShLexer;
 import us.bringardner.filesource.sh.FileSourceShParser;
@@ -493,7 +494,7 @@ public class TreeViewFrame extends JFrame {
 				parserClass= FileSourceShPreProcessorBraceParser.class;
 				start = "expansion_list";
 			}else {
-				lexerClass = FileSourceShLexer.class;
+				lexerClass = ExprLexer.class;
 				parserClass= ExprParser.class;
 				start = "equation";
 			}

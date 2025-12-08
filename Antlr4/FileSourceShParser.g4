@@ -385,7 +385,7 @@ functionDefinition:
     
     ;
 
-string : DQ_STRING | SQ_STRING | ESC;
+string: DQ_STRING | SQ_STRING | ESC;
 
 arrayInitializer:
      LPAREN argument_list RPAREN

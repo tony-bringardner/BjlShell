@@ -12,9 +12,14 @@ public class AntlrBuildExpr {
 		String out=file.getAbsolutePath()+"/fssh/us/bringardner/filesource/sh";
 		String src = file.getAbsolutePath()+"/Antlr4";
 
-		String [] arg2 = {"-listener","-visitor","-o",out,"-package","us.bringardner.filesource.sh",src+"/ExprParser.g4"};
+		String [] arg2 = {
+				"-listener","-visitor","-o",out,"-package",
+				"us.bringardner.filesource.sh",
+				src+"/ExprLexer.g4",
+				src+"/ExprParser.g4"
+				};
 		org.antlr.v4.Tool.main(arg2);
-
+		
 	}
 
 
