@@ -44,6 +44,7 @@ public class Dirs extends DirStack{
 		boolean onePerLine= false;
 		boolean showIndex= false;
 		Integer N=null;
+		Argument[] args = getArgs();
 		for(Argument arg : args) {
 			String a = ""+arg.getValue(ctx);
 			if( a.equals("dirs")) {

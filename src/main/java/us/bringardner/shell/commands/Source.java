@@ -6,6 +6,7 @@ import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.FsshList;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Source extends ShellCommand{
 	static String name = "source";
@@ -27,6 +28,7 @@ public class Source extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx)  {
+		Argument[] args = getArgs();
 		if(args.length==0) {
 			ctx.stderr.println("source: usage: source filename [arguments]");
 			return 1;

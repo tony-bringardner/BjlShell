@@ -10,6 +10,7 @@ import us.bringardner.io.filesource.FileSource;
 import us.bringardner.io.filesource.FileSourceFactory;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Connect extends ShellCommand{
 	static String name = "connect";
@@ -26,44 +27,45 @@ public class Connect extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
+		Argument[] args = getArgs();
 		if( args.length < 2) {
 			ctx.stdout.println( help);
 			ret = -1;
 		} else {
 			boolean readStdin=false;
 			//put in a list to make it easier to manage
-			List<String> args = new ArrayList<>();
-			for(int idx=0; idx<this.args.length; idx++) {
-				String arg = ""+this.args[idx].getValue(ctx);
+			List<String> sargs = new ArrayList<>();
+			for(int idx=0; idx<args.length; idx++) {
+				String arg = ""+args[idx].getValue(ctx);
 				if( arg.equals("-f")) {
-					arg = "-f="+this.args[++idx].getValue(ctx); 
+					arg = "-f="+args[++idx].getValue(ctx); 
 				} else if(arg.equals("-")) {
 					readStdin=true;
 				} else {
-					args.add(arg);
+					sargs.add(arg);
 				}
 			}
 
-			if(args.size()<2) {
+			if(sargs.size()<2) {
 				ctx.stdout.println( help);
 				ret = -1;
 			}
 			
-			String fid = args.removeFirst();
+			String fid = sargs.removeFirst();
 			FileSourceFactory tmp = FileSourceFactory.getFileSourceFactory(fid);
 			if( tmp == null ) {
 				ctx.stdout.println("Unknown factory id="+fid);
 				ret = -1;
 			} else {
 				if( !tmp.isConnected()) {
-					String mountPoint = args.removeLast().trim();
+					String mountPoint = sargs.removeLast().trim();
 					if( mountPoint.isEmpty()) {
 						throw new IOException("No valid mount point");
 					}
 					Properties props = tmp.getConnectProperties();
 					if( props != null && props.size()>0) {
 
-						for(String arg : args) {
+						for(String arg : sargs) {
 							processArg(ctx,arg,props);
 						}
 						if( readStdin) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Unmount extends ShellCommand{
 	static String name = "unmount";
@@ -17,6 +18,7 @@ public class Unmount extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
+		Argument[] args = getArgs();
 		if( args.length < 2 ) {
 			ctx.stdout.println(help);
 		} else {

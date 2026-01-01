@@ -21,6 +21,7 @@ public class Unalias extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
+		Argument[] args = getArgs();
 		for(Argument arg : args) {
 			ArgumentContext actx = arg.getContext();
 			if( actx.ARG_ID() != null) {

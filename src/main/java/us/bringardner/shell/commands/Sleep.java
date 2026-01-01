@@ -36,6 +36,7 @@ public class Sleep extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx) throws IOException {
+		Argument[] args = getArgs();
 		boolean debug = false;
 		int ret = 0;
 		if(args.length==0) {

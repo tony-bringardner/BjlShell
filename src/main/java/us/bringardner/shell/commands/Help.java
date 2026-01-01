@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import us.bringardner.shell.Console;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Help extends ShellCommand{
 	static String name = "help";
@@ -18,7 +19,7 @@ public class Help extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
-
+		Argument[] args = getArgs();
 		try {
 			if( args.length  == 0) {
 				for(Constructor<? extends ShellCommand> cmd : Console.commands.values()) {

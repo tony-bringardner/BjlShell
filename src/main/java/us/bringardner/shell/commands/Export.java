@@ -34,7 +34,7 @@ public class Export extends ShellCommand{
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
 
-
+		Argument[] args = getArgs();
 		ShellArgument sa = parseArgs(ctx, Arguments.class);
 
 		if(sa.options.contains(Arguments.f)) {
@@ -80,7 +80,7 @@ public class Export extends ShellCommand{
 					String val = args[idx].getValue(ctx).toString();
 					if( val.indexOf('=')>0) {
 						// assign statement should be in antlr args
-						Argument arg =  this.args[idx];
+						Argument arg =  args[idx];
 						ArgumentContext actx = arg.getContext();
 						if(actx.assignStatement()!=null) {
 							AssignStatement as = new AssignStatement(actx.assignStatement());

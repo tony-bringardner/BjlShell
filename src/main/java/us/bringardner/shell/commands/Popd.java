@@ -38,6 +38,7 @@ public class Popd extends DirStack {
 	
 	
 	public int process(ShellContext ctx, List<FileSource> stack) throws IOException {
+		Argument[] args = getArgs();
 		int ret = 0;
 		if(stack.size()>0) {
 			boolean n=false;

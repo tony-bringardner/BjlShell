@@ -49,6 +49,7 @@ public class Wait extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
+		Argument[] args = getArgs();
 
 		String varName=null;
 		boolean f = false;

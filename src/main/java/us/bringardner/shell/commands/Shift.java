@@ -5,6 +5,7 @@ import java.util.List;
 
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Shift extends ShellCommand{
 	static String name = "shift";
@@ -30,6 +31,7 @@ public class Shift extends ShellCommand{
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
 		int n =1;
+		Argument[] args = getArgs();
 		if( args.length>0) {
 			n = Integer.parseInt(""+args[0].getValue(ctx));
 		}

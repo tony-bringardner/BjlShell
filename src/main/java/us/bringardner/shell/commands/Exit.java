@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 import us.bringardner.shell.antlr.signal.ExitException;
 
 public class Exit extends ShellCommand{
@@ -18,7 +19,7 @@ public class Exit extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx) throws IOException {
-		
+		Argument[] args = getArgs();
 		int ret = 0;
 		if( args.length>0) {
 			try {

@@ -10,6 +10,7 @@ import java.util.List;
 import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Wc extends ShellCommand{
 	enum Type {maxLine,ByteCount,LineCount,CharCount,WordCount}
@@ -64,6 +65,7 @@ public class Wc extends ShellCommand{
      newline, word, character,  byte,  maximum
 		 */
 		boolean debug = false;
+		Argument[] args = getArgs();
 		for(int idx=0; idx < args.length; idx++ ) {
 			String arg = ""+args[idx].getValue(ctx);
 			if( arg.startsWith("-")) {

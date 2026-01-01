@@ -43,6 +43,7 @@ public class Kill extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx) throws IOException {
+		Argument[] args = getArgs();
 		Map<Integer, String> signals = Trap.getLocalSignals();
 		int ret = 0;
 		Integer signum = null;

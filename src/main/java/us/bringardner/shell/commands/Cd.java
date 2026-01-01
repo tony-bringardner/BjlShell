@@ -7,6 +7,7 @@ import java.util.List;
 import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Cd extends ShellCommand{
 	static String name = "cd";
@@ -24,6 +25,7 @@ public class Cd extends ShellCommand{
 		int ret = 0;
 		boolean follow = false;
 		List<String> sargs = new ArrayList<>();
+		Argument[] args = getArgs();
 		for(int idx=0; idx < args.length; idx++ ) {
 			String arg = (""+args[idx].getValue(ctx)).trim();
 			if( arg.startsWith("-")) {

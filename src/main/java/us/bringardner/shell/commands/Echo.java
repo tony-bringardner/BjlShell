@@ -28,7 +28,7 @@ public class Echo extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx) throws IOException {
-
+		Argument[] args = getArgs();
 
 		int ret = 0;
 		boolean nl = true;

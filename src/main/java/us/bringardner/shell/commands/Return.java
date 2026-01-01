@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 import us.bringardner.shell.antlr.signal.ReturnException;
 
 public class Return extends ShellCommand{
@@ -18,6 +19,7 @@ public class Return extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
+		Argument[] args = getArgs();
 		if( args.length>0) {
 			try {
 				ret = Integer.parseInt(args[0].getValue(ctx).toString());

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Find extends ShellCommand{
 	static String name = "find";
@@ -197,7 +198,7 @@ public class Find extends ShellCommand{
 		int ret = 0;
 		FindContext fctx = new FindContext(ctx);
 		List<String> paths = new ArrayList<String>();
-
+		Argument[] args = getArgs();
 		for(int idx=0; idx < args.length; idx++ ) {
 			String arg = (""+args[idx].getValue(ctx)).trim();
 

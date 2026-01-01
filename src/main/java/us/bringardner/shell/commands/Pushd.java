@@ -39,6 +39,7 @@ public class Pushd extends DirStack {
 	}
 	
 	public int process(ShellContext ctx, List<FileSource> dirStack) throws IOException {
+		Argument[] args = getArgs();
 		int ret = 0;
 		if( args.length== 0 ) {
 			//With no arguments, pushd exchanges the top two elements of the directory stack.

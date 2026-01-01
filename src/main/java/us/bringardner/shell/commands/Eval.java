@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Eval extends ShellCommand{
 	static String name = "eval";
@@ -20,7 +21,7 @@ public class Eval extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
-		
+		Argument[] args = getArgs();
 		StringBuilder buf = new StringBuilder();
 		
 		for (int idx = 0; idx < args.length; idx++) {

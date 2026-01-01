@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 
 public class Touch extends ShellCommand{
 
@@ -47,7 +48,7 @@ public class Touch extends ShellCommand{
 		@Override
 		public int process(TouchArguments ret, ShellContext ctx, int idx) throws IOException {
 			//[-A [-][[hh]mm]SS]
-
+			Argument[] args = getArgs();
 			boolean negate = false;
 			String val = ""+args[++idx].getValue(ctx);
 			if( val.length()==7) {
@@ -84,7 +85,7 @@ public class Touch extends ShellCommand{
 		public int process(TouchArguments ret, ShellContext ctx, int idx) throws IOException {
 			//[-r file]
 			//Use the access and modifications times from the specified file instead of the current time of day.
-
+			Argument[] args = getArgs();
 			String path = args[++idx].getValue(ctx).toString();
 			List<FileSource> file = getFiles(ctx, path);
 			ret.parameters.put(Arguments.r, Arrays.asList(file));
@@ -107,6 +108,7 @@ public class Touch extends ShellCommand{
 
 		@Override
 		public int process(TouchArguments ret, ShellContext ctx, int idx) throws IOException {
+			Argument[] args = getArgs();
 			String val = args[++idx].getValue(ctx).toString();
 			SimpleDateFormat sdf = null;
 			for(String fmt : dateFormats) {
@@ -142,6 +144,7 @@ public class Touch extends ShellCommand{
 			//  the date parses as a series of signed numbers
 			//   Z ( time zone)?? parses as path
 			// idx should be 1
+			Argument[] args = getArgs();
 			StringBuilder tmp = new StringBuilder();
 			int idx2 = idx+1;
 			for(;idx2<=3; idx2++) {
@@ -346,6 +349,7 @@ public class Touch extends ShellCommand{
 
 	protected TouchArguments parserArguments(ShellContext ctx,Class<?> cls,Map<Object,ArgumentProcessor> actions) throws IOException {
 		TouchArguments ret = new TouchArguments();
+		Argument[] args = getArgs();
 		if( args.length>0) {
 			try {
 				Method m = cls.getDeclaredMethod("valueOf", String.class);
@@ -379,6 +383,7 @@ public class Touch extends ShellCommand{
 
 	protected TouchArguments parserArguments1(ShellContext ctx,Class<?> cls) throws IOException {
 		TouchArguments ret = new TouchArguments();
+		Argument[] args = getArgs();
 		if( args.length>0) {
 			try {
 				Method m = cls.getDeclaredMethod("valueOf", String.class);

@@ -9,6 +9,7 @@ import us.bringardner.shell.Console;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.Console.HistoryEntry;
+import us.bringardner.shell.antlr.Argument;
 
 public class History extends ShellCommand{
 	static String name = "history";
@@ -34,6 +35,7 @@ public class History extends ShellCommand{
 	@Override
 	public int process(ShellContext ctx) throws IOException {		
 		int ret = 0;
+		Argument[] args = getArgs();
 		if( args.length==0) {
 			print(ctx,ctx.console.history.size());
 		} else {

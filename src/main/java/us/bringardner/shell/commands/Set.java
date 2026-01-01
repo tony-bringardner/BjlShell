@@ -48,6 +48,7 @@ public class Set extends ShellCommand{
 	public int process(ShellContext ctx) throws IOException {
 
 		int ret = 0;
+		Argument[] args = getArgs();
 		if( args == null || args.length == 0) {
 			throw new IOException("Args are not availible");
 		}

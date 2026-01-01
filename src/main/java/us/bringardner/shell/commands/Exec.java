@@ -33,6 +33,7 @@ public class Exec extends ShellCommand{
 
 	@Override
 	public int process(ShellContext ctx) throws IOException {
+		Argument[] args = getArgs();
 		int ret = 0;
 		int idx=0;
 		boolean c = false;
