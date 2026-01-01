@@ -89,9 +89,8 @@ public class TestVisitor {
 	public static Argument parseAurgument(String code) {
 		FileSourceShLexer lexer = new FileSourceShLexer(CharStreams.fromString(code));
 		FileSourceShParser parser = new FileSourceShParser(new CommonTokenStream(lexer));
-		FileSourceShVisitorImpl visitor = new FileSourceShVisitorImpl();
 		ArgumentContext a = parser.argument();
-		Argument ret = visitor.visitArgument(a);
+		Argument ret = new Argument(a);
 
 		return ret;
 	}

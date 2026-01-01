@@ -256,10 +256,6 @@ public abstract class Statement {
 		return argCtx;
 	}
 
-	public void setArgCtx(List<ArgumentContext> argCtx) {
-		this.argCtx = argCtx;
-	}
-
 	public Statement(ParserRuleContext context) {
 		this.context = context;
 		if(context==null) {

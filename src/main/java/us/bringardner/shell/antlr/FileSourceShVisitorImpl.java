@@ -266,7 +266,7 @@ backgroundCommand:
 	@Override
 	public JobControlStatement visitJob_control_statement(Job_control_statementContext ctx) {
 		JobControlStatement ret = new JobControlStatement(ctx);
-		ret.setArgs(visitArgument_list(ctx.argument()), null);
+		ret.setArgs(visitArgument_list(ctx.argument()), ctx.argument());
 		ret.setJobSpecs(visitJobspec(ctx.jobspec()));
 		return ret;
 	}
@@ -616,16 +616,10 @@ forStatement
 		} else {
 			throw new RuntimeException("Invalid for statement");
 		}
-		List<Argument> args = new ArrayList<>();
 		ListContext list = ctx.list();
 		if( list !=null) {
-			for(ArgumentContext actx : list.argument()) {
-				Argument a = visitArgument(actx);
-				if( a != null ) {
-					args.add(a);
-				}
-			}
-			ret.setArgs(args.toArray(new Argument[args.size()]), null);
+			Argument[] tmp = visitArgument_list(list.argument()); 
+			ret.setArgs(tmp, list.argument());
 		}
 		List<Statement> stmts = visitDoStatement(ctx.doStatement());
 		ret.setStmts(stmts);
@@ -641,18 +635,12 @@ forStatement
 		} else {
 			throw new RuntimeException("Invalid for statement");
 		}
-		List<Argument> args = new ArrayList<>();
 		ListContext list = ctx.list();
-
 		if( list !=null) {
-			for(ArgumentContext actx : list.argument()) {
-				Argument a = visitArgument(actx);
-				if( a != null ) {
-					args.add(a);
-				}
-			}
-			ret.setArgs(args.toArray(new Argument[args.size()]), null);
+			Argument[] tmp = visitArgument_list(list.argument()); 
+			ret.setArgs(tmp, list.argument());			
 		}
+		
 		List<Statement> stmts = visitDoStatement(ctx.doStatement());
 		ret.setStmts(stmts);
 
@@ -673,27 +661,11 @@ forStatement
 		return new FunctionDefStatement(ctx,name,stmts);
 	}
 
-	/*
-argument
-    : STRING
-    | MINUS? ID
-    | variable
-    | NUMBER
-    | file_name
-    | mathExpression
-    ;
-
-	 */
 	@Override
-	public Argument visitArgument(ArgumentContext ctx) {
-
-		Argument ret = new Argument(ctx);
-
-		return ret;
-
+	public Object visitArgument(ArgumentContext ctx) {
+		throw new RuntimeException("Don't call this function. use list instead");
 	}
-
-
+	
 	@Override
 	public Argument[] visitArgument_list(Argument_listContext ctx) {
 		Argument[] ret = visitArgument_list(ctx.argument());
@@ -704,10 +676,12 @@ argument
 	private Argument[] visitArgument_list(List<ArgumentContext> ctx) {
 		List<Argument> ret = new ArrayList<>();
 		if( ctx != null) {
-			for(ArgumentContext a : ctx) {
-				ret.add(visitArgument(a));
+			for(int idx=0,sz=ctx.size(); idx < sz; idx++ ) {
+				ArgumentContext arg = ctx.get(idx);
+				ret.add(new Argument(arg));
 			}
 		}
+		
 		Argument [] args = ret.toArray(new Argument[ret.size()]);
 		return args;
 	}
@@ -761,9 +735,8 @@ argument
 	public static Argument parseAurgument(String code) {
 		FileSourceShLexer lexer = new FileSourceShLexer(CharStreams.fromString(code));
 		FileSourceShParser parser = new FileSourceShParser(new CommonTokenStream(lexer));
-		FileSourceShVisitorImpl visitor = new FileSourceShVisitorImpl();
 		ArgumentContext a = parser.argument();
-		Argument ret = visitor.visitArgument(a);
+		Argument ret = new Argument(a);
 
 		return ret;
 	}
