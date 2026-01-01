@@ -80,7 +80,8 @@ public class ForStatement extends LoopStatement{
 
 	private List<String> argsToString(ShellContext ctx) throws IOException {
 		List<String> ret = new ArrayList<>();
-
+		
+		Argument[] args = getArgs();
 		for (int idx = 0; idx < args.length; idx++) {
 
 			Argument a = args[idx];

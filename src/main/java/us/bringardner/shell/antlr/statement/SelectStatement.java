@@ -12,6 +12,7 @@ import us.bringardner.filesource.sh.FileSourceShParser.SelectStatementContext;
 import us.bringardner.io.filesource.FileSource;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
+import us.bringardner.shell.antlr.Argument;
 import us.bringardner.shell.antlr.Compare;
 import us.bringardner.shell.antlr.Expression;
 import us.bringardner.shell.antlr.Statement;
@@ -90,7 +91,8 @@ public class SelectStatement extends LoopStatement{
 				}
 			}			
 		}
-
+		
+		Argument[] args = getArgs();
 		for (int idx = 0; idx < args.length; idx++) {
 			String av = ""+args[idx].getValue(sc);
 			if( ShellCommand.hasWildcard(av)) {

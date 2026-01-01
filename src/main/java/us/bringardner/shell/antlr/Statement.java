@@ -248,7 +248,7 @@ public abstract class Statement {
 	}
 
 	protected ParserRuleContext context;
-	protected Argument [] args=new Argument[0];
+	private Argument [] args=new Argument[0];
 	private List<ArgumentContext> argCtx;
 
 
@@ -336,7 +336,6 @@ public abstract class Statement {
 			ParseTree ws = kids.get(1);
 
 			int aidx1=0;
-			//int aidx=0;
 			boolean changed = false;
 /*
 list: 
@@ -392,7 +391,7 @@ list:
 							newKids.add(na);
 							newKids.add(ws);
 						}
-					} else {						
+					} else {					
 						newKids.add(kid);
 						newArgs.add(a);
 					}				

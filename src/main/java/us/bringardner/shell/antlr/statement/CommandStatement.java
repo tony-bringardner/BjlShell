@@ -284,6 +284,7 @@ public class CommandStatement extends Statement{
 
 
 	private void argsToString(List<String> cmd, ShellContext ctx) throws IOException {
+		Argument[] args = getArgs();
 		for (int idx = 0; idx < args.length; idx++) {
 
 			Argument a = args[idx];
@@ -324,9 +325,11 @@ public class CommandStatement extends Statement{
 			if( !testEq(name, cs.name)) {
 				return false;
 			}
-			if(args.length==cs.args.length) {
+			Argument[] args = getArgs();
+			Argument[] csargs = cs.getArgs();
+			if(args.length==csargs.length) {
 				for (int idx = 0; idx < args.length; idx++) {
-					if(!args[idx].equals(cs.args[idx])) {
+					if(!args[idx].equals(csargs[idx])) {
 						return false;
 					}
 				}
@@ -352,6 +355,7 @@ public class CommandStatement extends Statement{
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder(name);
+		Argument[] args = getArgs();
 		for(Object a : args) {
 			ret.append(' ');
 			ret.append(a.toString());
@@ -392,6 +396,8 @@ public class CommandStatement extends Statement{
 		PrintStream out = ctx.stdout;
 		PrintStream err = ctx.stderr;
 
+		Argument[] args = getArgs();
+		
 		try {
 			configureRedirect(ctx,redirect);				
 		
@@ -536,6 +542,8 @@ public class CommandStatement extends Statement{
 
 	public int invokeAlias(ShellContext ctx, Object code) throws IOException {
 		int ret = 0;
+		
+		Argument[] args = getArgs();
 		StringBuilder tmp = new StringBuilder(code.toString());
 		for (int idx = 0; idx < args.length; idx++) {
 			tmp.append(' ');
@@ -657,6 +665,7 @@ public class CommandStatement extends Statement{
 	}
 
 	private int execute(FileSource exec, ShellContext ctx) throws IOException {
+		Argument[] args = getArgs();
 		List<String> cmd =  new ArrayList<>();
 		cmd.add(exec.getAbsolutePath());
 		byte [] data = exec.head(20);

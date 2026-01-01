@@ -59,7 +59,8 @@ public class JobControlStatement extends Statement{
 		default:
 			throw new IllegalArgumentException("Unexpected value for job control cmd: " + cmd);
 		}
-
+		
+		Argument[] args = getArgs();
 		Argument[] argsToUse = args;
 		if( specs.size()>0) {
 			Argument tmpArgs [] = new Argument[specs.size()+args.length];
