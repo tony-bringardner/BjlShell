@@ -392,9 +392,9 @@ list:
 							newKids.add(na);
 							newKids.add(ws);
 						}
-					} else {
-						newArgs.add(a);
+					} else {						
 						newKids.add(kid);
+						newArgs.add(a);
 					}				
 				} else  {
 					newKids.add(kid);
