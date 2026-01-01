@@ -47,32 +47,47 @@ public class Sleep extends ShellCommand{
 			Integer ival = null;
 			Long multiplyer=null;
 
-			/**
-			 * an argument in the form of 1s is parsed as two args. a number and a path segment
-			 */
-			
+
 			for(Argument a :args) {
 				String val = (""+a.getValue(ctx)).trim();
 				if(val.isEmpty()) {
 					continue;
 				}
-				if( Character.isDigit(val.charAt(0))) {
-					ival = Integer.parseInt(val);
-				} else if( val.equals("s")) {
-					multiplyer = Second;
-				} else if( val.equals("m")) {
-					multiplyer = Minute;
-				} else if( val.equals("h")) {
-					multiplyer = Hour;
-				} else if( val.equals("d")) {
-					multiplyer = Day;
-				} else if( val.equals("M")) {
-					multiplyer = MilliSecond;
-				} else if( val.equals("-db")) {
-					debug = true;											
-				} 
+				if( val.equals("-db")) {
+					debug = true;
+					continue;
+				}
+				
+				char chars [] = val.toCharArray();
+				String number = val;
+				String type = null;
+
+				for (int idx = 0; idx < chars.length; idx++) {
+					if(!Character.isDigit(chars[idx])) {
+						number = val.substring(0,idx);
+						type = val.substring(idx);
+						break;
+					}
+				}
+
+				ival = Integer.parseInt(number);
+				if( type !=null) {
+					if( type.equals("s")) {
+						multiplyer = Second;
+					} else if( type.equals("m")) {
+						multiplyer = Minute;
+					} else if( type.equals("h")) {
+						multiplyer = Hour;
+					} else if( type.equals("d")) {
+						multiplyer = Day;
+					} else if( type.equals("M")) {
+						multiplyer = MilliSecond;
+					} else if( type.equals("-db")) {
+						debug = true;											
+					}
+				}
 			}
-			
+
 			if( ival == null ) {
 				ctx.stderr.println("No valid tiem ");
 				return 1;

@@ -322,7 +322,7 @@ public void touch_d() throws IOException, ParseException {
 		ExecuteResult result = executeCommand(cmd, "");
 		int exitCode = result.exitCode;
 		if( exitCode!=0) {
-			throw new IOException("Touch did not exit cleanly "+exitCode+" for "+dateStr);
+			throw new IOException("idx="+idx+" Touch did not exit cleanly. exit code= "+exitCode+" for "+dateStr);
 		}
 
 		if( !touchFile.exists()) {

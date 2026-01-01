@@ -151,7 +151,11 @@ public class TestVisitor {
 		assertNotNull(ctx3, "variable");
 		assertEquals(string, ctx3.getText());
 
-		a = parseAurgument("1234");
+		/*
+		 * "1234" parses as a path witch is fine.
+		 * "1234 " parses as a signed number
+		 */
+		a = parseAurgument("1234 ");
 		Signed_numberContext ctx1 = a.getContext().signed_number();
 		assertNotNull(ctx1, "number");
 		assertEquals("1234", ctx1.getText());

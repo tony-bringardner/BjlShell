@@ -71,7 +71,9 @@ public class Kill extends ShellCommand{
 			} else if( val.startsWith("-")) {				
 				signum = parseSigNum(val.substring(1));				
 			} else {
-				
+				if( val.equals("%")) {
+					val+=args[++idx].getValue(ctx);
+				}
 				int id = JobControlStatement.parseJobSpec(jm, val);
 				IJob job = jm.getJob(id);
 				if( job==null) {

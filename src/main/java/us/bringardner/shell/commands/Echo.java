@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import us.bringardner.filesource.sh.FileSourceShParser.ArgumentContext;
+import us.bringardner.filesource.sh.FileSourceShParser.CheckEOFContext;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Argument;
@@ -52,6 +53,13 @@ public class Echo extends ShellCommand{
 						buf.append(val);
 					}						
 					aidx++;
+					if( kid.getChildCount()>1) {
+						ParseTree ws = kid.getChild(1);
+						if (!(ws instanceof CheckEOFContext)) {
+							val = ws.getText();
+							buf.append(val);
+						}
+					}
 				} else if (aidx<args.length && !buf.isEmpty() && kid instanceof TerminalNode) {
 					String val = kid.getText();
 					buf.append(val);

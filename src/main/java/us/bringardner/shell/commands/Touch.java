@@ -20,7 +20,7 @@ import us.bringardner.shell.antlr.Argument;
 
 public class Touch extends ShellCommand{
 
-	private enum Arguments {A, a, c, h, m,r,t,d};
+	private enum TouchArgs {A, a, c, h, m,r,t,d};
 
 	static String name = "touch";
 	static String help = ""
@@ -71,7 +71,7 @@ public class Touch extends ShellCommand{
 				mm = Integer.parseInt(tmp);
 			}
 			int SS = Integer.parseInt(val);
-			ret.parameters.put(Arguments.A, Arrays.asList(negate,hh,mm,SS));
+			ret.parameters.put(TouchArgs.A, Arrays.asList(negate,hh,mm,SS));
 
 			return idx;
 		}
@@ -88,7 +88,7 @@ public class Touch extends ShellCommand{
 			Argument[] args = getArgs();
 			String path = args[++idx].getValue(ctx).toString();
 			List<FileSource> file = getFiles(ctx, path);
-			ret.parameters.put(Arguments.r, Arrays.asList(file));
+			ret.parameters.put(TouchArgs.r, Arrays.asList(file));
 			return idx;
 		}
 
@@ -124,7 +124,7 @@ public class Touch extends ShellCommand{
 
 			try {
 				Date date = sdf.parse(val);
-				ret.parameters.put(Arguments.t, Arrays.asList(date.getTime()));
+				ret.parameters.put(TouchArgs.t, Arrays.asList(date.getTime()));
 			} catch (ParseException e) {
 				throw new IOException("Invalid date format = "+val);
 			}
@@ -141,29 +141,24 @@ public class Touch extends ShellCommand{
 		
 		@Override
 		public int process(TouchArguments ret, ShellContext ctx, int idx) throws IOException {
-			//  the date parses as a series of signed numbers
-			//   Z ( time zone)?? parses as path
+			//  when T is used the date now parses as on block
+			//  if T i sNOT present it's parsed as 2 args
+			
 			// idx should be 1
-			Argument[] args = getArgs();
-			StringBuilder tmp = new StringBuilder();
 			int idx2 = idx+1;
-			for(;idx2<=3; idx2++) {
-				tmp.append(args[idx2].getValue(ctx).toString());
+			Argument[] args = getArgs();
+			String arg = ""+args[idx2].getValue(ctx);
+			if( !arg.contains("T")) {
+				String tmp = ""+args[++idx2].getValue(ctx);
+				arg = arg+" "+tmp;
+			} else {
+				arg = arg.replace("T"," ");
 			}
-			tmp.append(' ');
-			for(;idx2<args.length-1; idx2++) {
-				String val = args[idx2].getValue(ctx).toString();				
-				tmp.append(val);
-			}
-			
-			String tm2 = tmp.toString();
-			
-			String val = tm2.replace("T","");
-			
+			//touch -d 2020-07-23 06:30:10Z
 			boolean gmt = false;
-			if( val.endsWith("Z")) {
+			if( arg.endsWith("Z")) {
 				gmt = true;
-				val = val.substring(0,val.length()-1);
+				arg = arg.substring(0,arg.length()-1);
 			}
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -172,13 +167,13 @@ public class Touch extends ShellCommand{
 				if( gmt ) {
 					sdf.setTimeZone(TimeZone.getTimeZone("GMT"));	
 				}
-				Date date = sdf.parse(val);
-				ret.parameters.put(Arguments.d, Arrays.asList(date.getTime()));
+				Date date = sdf.parse(arg);
+				ret.parameters.put(TouchArgs.d, Arrays.asList(date.getTime()));
 			} catch (ParseException e) {
 				throw new IOException("Invalid date format "+e);
 			}
 
-			return idx2-1;
+			return idx2;
 		}
 
 	}
@@ -195,10 +190,10 @@ public class Touch extends ShellCommand{
 	
 	public Touch() {
 		super(name, help);
-		actions.put(Arguments.A, new Action_A());
-		actions.put(Arguments.r, new Action_r());
-		actions.put(Arguments.t, new Action_t());
-		actions.put(Arguments.d, new Action_d());
+		actions.put(TouchArgs.A, new Action_A());
+		actions.put(TouchArgs.r, new Action_r());
+		actions.put(TouchArgs.t, new Action_t());
+		actions.put(TouchArgs.d, new Action_d());
 	}
 
 	@Override
@@ -206,12 +201,12 @@ public class Touch extends ShellCommand{
 		int ret = 0;
 
 
-		TouchArguments targs = parserArguments(ctx, Arguments.class, actions);
+		TouchArguments targs = parserArguments(ctx, TouchArgs.class, actions);
 
-		List<Arguments> options = new ArrayList<>();
+		List<TouchArgs> options = new ArrayList<>();
 		for(Object o : targs.options) {
-			if (o instanceof Arguments) {
-				options.add((Arguments) o);				
+			if (o instanceof TouchArgs) {
+				options.add((TouchArgs) o);				
 			}
 		}
 
@@ -235,7 +230,7 @@ public class Touch extends ShellCommand{
 	@SuppressWarnings("unchecked")
 	private void touch(FileSource file, TouchArguments targs) throws IOException {
 		if( !file.exists()) {
-			if( targs.options.contains(Arguments.c) || targs.options.contains(Arguments.A) || targs.options.contains(Arguments.h)) {
+			if( targs.options.contains(TouchArgs.c) || targs.options.contains(TouchArgs.A) || targs.options.contains(TouchArgs.h)) {
 				//  don't create file
 				return;
 			}
@@ -245,8 +240,8 @@ public class Touch extends ShellCommand{
 			}
 		}
 
-		if( targs.options.contains(Arguments.r)) {
-			List<Object> list = targs.parameters.get(Arguments.r);
+		if( targs.options.contains(TouchArgs.r)) {
+			List<Object> list = targs.parameters.get(TouchArgs.r);
 			if( list == null ) {
 				throw new IOException("No parameter list");
 			}
@@ -260,18 +255,18 @@ public class Touch extends ShellCommand{
 			}
 			FileSource fs = fsl.get(0);
 
-			if( targs.options.contains(Arguments.a) || !targs.options.contains(Arguments.m)) {
+			if( targs.options.contains(TouchArgs.a) || !targs.options.contains(TouchArgs.m)) {
 				file.setLastAccessTime(fs.lastAccessTime());
 			}
 			
-			if( targs.options.contains(Arguments.m) || !targs.options.contains(Arguments.a)) {
+			if( targs.options.contains(TouchArgs.m) || !targs.options.contains(TouchArgs.a)) {
 				file.setLastModifiedTime(fs.lastModified());
 			}
 
 
-		} else if( targs.options.contains(Arguments.A)) {
+		} else if( targs.options.contains(TouchArgs.A)) {
 			// adjust by amount
-			List<Object> values = targs.parameters.get(Arguments.A);
+			List<Object> values = targs.parameters.get(TouchArgs.A);
 			if( values == null || values.size()!= 4) {
 				throw new IOException("Invalid args for -A="+values);
 			}
@@ -281,45 +276,45 @@ public class Touch extends ShellCommand{
 			int mm = (int) values.get(2);
 			int ss = (int) values.get(3);
 			
-			if( targs.options.contains(Arguments.a) || !targs.options.contains(Arguments.m)) {
+			if( targs.options.contains(TouchArgs.a) || !targs.options.contains(TouchArgs.m)) {
 				long ad = adjustTimeForA(file.lastAccessTime(),negate,hh,mm,ss);				
 				file.setLastAccessTime(ad);
 			}
 			
-			if( targs.options.contains(Arguments.m) || !targs.options.contains(Arguments.a)) {
+			if( targs.options.contains(TouchArgs.m) || !targs.options.contains(TouchArgs.a)) {
 				long md = adjustTimeForA(file.lastModified(),negate,hh,mm,ss);
 				file.setLastModifiedTime(md);
 			}
 			
 
- 		} else if( targs.options.contains(Arguments.d)) {
+ 		} else if( targs.options.contains(TouchArgs.d)) {
 			// adjust by amount
-			List<Object> values = targs.parameters.get(Arguments.d);
+			List<Object> values = targs.parameters.get(TouchArgs.d);
 			if( values == null || values.size()!= 1) {
 				throw new IOException("Invalid args for -d="+values);
 			}
 			long time  = (long) values.get(0);
-			if( targs.options.contains(Arguments.a) || !targs.options.contains(Arguments.m)) {
+			if( targs.options.contains(TouchArgs.a) || !targs.options.contains(TouchArgs.m)) {
 				file.setLastAccessTime(time);
 			}
 			
-			if( targs.options.contains(Arguments.m) || !targs.options.contains(Arguments.a)) {
+			if( targs.options.contains(TouchArgs.m) || !targs.options.contains(TouchArgs.a)) {
 				file.setLastModifiedTime(time);
 			}
 			
 
-		} else if( targs.options.contains(Arguments.t)) {
+		} else if( targs.options.contains(TouchArgs.t)) {
 			// adjust by amount
-			List<Object> values = targs.parameters.get(Arguments.t);
+			List<Object> values = targs.parameters.get(TouchArgs.t);
 			if( values == null || values.size()!= 1) {
 				throw new IOException("Invalid args for -t="+values);
 			}
 			long time  = (long) values.get(0);
-			if( targs.options.contains(Arguments.a) || !targs.options.contains(Arguments.m)) {
+			if( targs.options.contains(TouchArgs.a) || !targs.options.contains(TouchArgs.m)) {
 				file.setLastAccessTime(time);
 			}
 			
-			if( targs.options.contains(Arguments.m) || !targs.options.contains(Arguments.a)) {
+			if( targs.options.contains(TouchArgs.m) || !targs.options.contains(TouchArgs.a)) {
 				file.setLastModifiedTime(time);
 			}
 			
@@ -396,7 +391,7 @@ public class Touch extends ShellCommand{
 							try {
 								Object a = m.invoke(null, ""+c);
 								ret.options.add(a);
-								if( a.equals(Arguments.A)) {
+								if( a.equals(TouchArgs.A)) {
 									//[-A [-][[hh]mm]SS]
 									List<Object> p = new ArrayList<>();
 									String val = args[idx++].getValue(ctx).toString();
@@ -405,13 +400,13 @@ public class Touch extends ShellCommand{
 										p.add(args[idx++].getValue(ctx).toString());
 									}
 									ret.parameters.put(arg, p);
-								} else if( a.equals(Arguments.r)) {
+								} else if( a.equals(TouchArgs.r)) {
 									//[-r file]
 									ret.parameters.put(arg, Arrays.asList(args[idx++].getValue(ctx).toString()));
-								} else if( a.equals(Arguments.t)) {
+								} else if( a.equals(TouchArgs.t)) {
 									//[-t [[CC]YY]MMDDhhmm[.SS]]
 									ret.parameters.put(arg, Arrays.asList(args[idx++].getValue(ctx).toString()));
-								} else if( a.equals(Arguments.d)) {
+								} else if( a.equals(TouchArgs.d)) {
 									//[-d YYYY-MM-DDThh:mm:SS[.frac][tz]]
 									List<Object> p = new ArrayList<>();
 									String val = args[idx++].getValue(ctx).toString();

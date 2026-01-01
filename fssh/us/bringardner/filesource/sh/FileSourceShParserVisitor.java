@@ -1,4 +1,4 @@
-// Generated from C:/Git/BjlShell/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
+// Generated from /Volumes/Data/eclipse-git/BjlShell/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
 package us.bringardner.filesource.sh;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -100,6 +100,30 @@ public interface FileSourceShParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArgument(FileSourceShParser.ArgumentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FileSourceShParser#checkWS}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCheckWS(FileSourceShParser.CheckWSContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FileSourceShParser#checkEOF}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCheckEOF(FileSourceShParser.CheckEOFContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FileSourceShParser#checkSEMI}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCheckSEMI(FileSourceShParser.CheckSEMIContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link FileSourceShParser#checkNL}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCheckNL(FileSourceShParser.CheckNLContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link FileSourceShParser#signed_number}.
 	 * @param ctx the parse tree

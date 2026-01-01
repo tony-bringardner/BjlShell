@@ -35,7 +35,7 @@ public class Trap extends ShellCommand implements SignalHandler {
 		super(name, help);
 	}
 	
-	private enum Args{l,p,P};
+	private enum TrapArgs{l,p,P};
 	
 	
 	private static final String [] COMMON_NAMES = {"HUP","INT","QUIT","ILL","TRAP","ABRT","FPE","KILL","BUS","SEGV","SYS","PIPE","ALRM","TERM","URG","STOP","TSTP","CONT","CHLD","TTIN","TTOU","IO","XCPU","XFSZ","VTALRM","PROF","WINCH","USR1","USR2"};
@@ -70,7 +70,7 @@ public class Trap extends ShellCommand implements SignalHandler {
 	public int process(ShellContext ctx) throws IOException {
 		int ret = 0;
 		
-		ShellArgument ops = parseArgs(ctx, Args.class);
+		ShellArgument ops = parseArgs(ctx, TrapArgs.class);
 		if( ops.paths.size()>0) {
 			String action = ops.paths.remove(0);
 			for(String val : ops.paths) {

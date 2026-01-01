@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -673,17 +674,38 @@ forStatement
 		return ret;
 	}
 
+	/*
+ an argument ALWAYS has one child
+argument:
+      ARG_ID 
+    | arg_command_substitution
+    | signed_number
+    | NUMBER    
+   	| braceExpansion
+   	| TEXT
+    | string         
+    | assignStatement            
+    | mathExpression
+    | parameter
+	| path	
+	| ID
+	| variable
+	| PERC
+	
+    ;
+	 */
+	
 	private Argument[] visitArgument_list(List<ArgumentContext> ctx) {
-		List<Argument> ret = new ArrayList<>();
+		Argument [] ret = new Argument [0] ;
 		if( ctx != null) {
+			ret = new Argument[ctx.size()];
 			for(int idx=0,sz=ctx.size(); idx < sz; idx++ ) {
 				ArgumentContext arg = ctx.get(idx);
-				ret.add(new Argument(arg));
+				ret[idx] = new Argument(arg);
 			}
-		}
+		} 
 		
-		Argument [] args = ret.toArray(new Argument[ret.size()]);
-		return args;
+		return ret;
 	}
 
 	@Override

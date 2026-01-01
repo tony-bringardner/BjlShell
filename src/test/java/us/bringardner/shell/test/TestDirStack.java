@@ -15,7 +15,12 @@ import us.bringardner.io.filesource.FileSourceFactory;
 import us.bringardner.io.filesource.memory.MemoryFileSourceFactory;
 import us.bringardner.shell.Console;
 
-
+/*
+ * broken 
+ * TestDirStack
+ * TestPipeStatement
+ * TestDisown
+ */
 @TestMethodOrder(OrderAnnotation.class)
 public class TestDirStack extends AbstractConsoleTest{
 

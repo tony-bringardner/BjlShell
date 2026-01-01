@@ -104,12 +104,13 @@ argument_list: (argument WS*)*
 	;
 
 
+//argument:argument1 (checkWS|checkEOF|checkSEMI|checkNL);
 	
 argument:
       ARG_ID 
     | arg_command_substitution
-    | signed_number
-    | NUMBER    
+    | signed_number (checkWS|checkEOF|checkSEMI|checkNL)
+    | NUMBER    (checkWS|checkEOF|checkSEMI|checkNL)
    	| braceExpansion
    	| TEXT
     | string         
@@ -122,7 +123,12 @@ argument:
 	| PERC
 	
     ;
-    
+
+checkWS: {if(_input.LA(1) == WS)} WS;
+checkEOF: {if(_input.LA(1) == EOF)} WS;
+checkSEMI: {if(_input.LA(1) == SEMI)} WS;
+checkNL: {if(_input.LA(1) == NL)} WS;
+        
 signed_number: (MINUS|PLUS|PERC)? NUMBER;    
 
 

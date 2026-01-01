@@ -1,4 +1,4 @@
-// Generated from C:/Git/BjlShell/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
+// Generated from /Volumes/Data/eclipse-git/BjlShell/Antlr4/FileSourceShParser.g4 by ANTLR 4.13.2
 package us.bringardner.filesource.sh;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -192,6 +192,54 @@ public class FileSourceShParserBaseListener implements FileSourceShParserListene
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArgument(FileSourceShParser.ArgumentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCheckWS(FileSourceShParser.CheckWSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCheckWS(FileSourceShParser.CheckWSContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCheckEOF(FileSourceShParser.CheckEOFContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCheckEOF(FileSourceShParser.CheckEOFContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCheckSEMI(FileSourceShParser.CheckSEMIContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCheckSEMI(FileSourceShParser.CheckSEMIContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCheckNL(FileSourceShParser.CheckNLContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCheckNL(FileSourceShParser.CheckNLContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
