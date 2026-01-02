@@ -63,9 +63,8 @@ ESC_OR:  '\\||';
 
 
 
-NUMBER :
-     INTEGER
-    | DECIMAL
+NUMBER : ('+'|'-'|'%')? INTEGER
+    | ('+'|'-'|'%')? DECIMAL
     ;
 
 fragment EXPONENT : ('e'|'E') ('+'|'-') ? INTEGER+;

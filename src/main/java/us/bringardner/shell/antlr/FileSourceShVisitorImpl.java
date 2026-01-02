@@ -10,7 +10,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -35,8 +34,6 @@ import us.bringardner.filesource.sh.FileSourceShParser.FactorContext;
 import us.bringardner.filesource.sh.FileSourceShParser.ForStatementContext;
 import us.bringardner.filesource.sh.FileSourceShParser.FunctionDefinitionContext;
 import us.bringardner.filesource.sh.FileSourceShParser.IfStatementContext;
-import us.bringardner.filesource.sh.FileSourceShParser.Job_control_statementContext;
-import us.bringardner.filesource.sh.FileSourceShParser.JobspecContext;
 import us.bringardner.filesource.sh.FileSourceShParser.ListContext;
 import us.bringardner.filesource.sh.FileSourceShParser.MathExpressionContext;
 import us.bringardner.filesource.sh.FileSourceShParser.MathStatementContext;
@@ -73,7 +70,6 @@ import us.bringardner.shell.antlr.statement.DeclareAssociateArrayStatement;
 import us.bringardner.shell.antlr.statement.ForStatement;
 import us.bringardner.shell.antlr.statement.FunctionDefStatement;
 import us.bringardner.shell.antlr.statement.IfStatement;
-import us.bringardner.shell.antlr.statement.JobControlStatement;
 import us.bringardner.shell.antlr.statement.LogicStatement;
 import us.bringardner.shell.antlr.statement.MathStatement;
 import us.bringardner.shell.antlr.statement.PipeStatement;
@@ -197,8 +193,6 @@ statement
 			ret = visitBackgroundCommand(ctx.backgroundCommand());
 		}else if(ctx.selectStatement()!=null ) {
 			ret = visitSelectStatement(ctx.selectStatement());
-		} else if(ctx.job_control_statement() !=null) {
-			ret = visitJob_control_statement(ctx.job_control_statement());
 		}  else  {
 			throw new RuntimeException("No known statement '"+ctx.getText()+"'");
 		} 
@@ -262,33 +256,6 @@ backgroundCommand:
 		} else {
 			throw new RuntimeException("No option in pipable");
 		}		
-	}
-
-	@Override
-	public JobControlStatement visitJob_control_statement(Job_control_statementContext ctx) {
-		JobControlStatement ret = new JobControlStatement(ctx);
-		ret.setArgs(visitArgument_list(ctx.argument()), ctx.argument());
-		ret.setJobSpecs(visitJobspec(ctx.jobspec()));
-		return ret;
-	}
-
-	private List<String> visitJobspec(List<JobspecContext> ctx) {
-		List<String> ret = new ArrayList<>();
-		if( ctx != null ) {
-			for(JobspecContext js : ctx) {
-				ret.add(visitJobspec(js));
-			}
-		}
-		return ret;
-	}
-
-	@Override
-	public String visitJobspec(JobspecContext ctx) {
-		if( ctx == null ) {
-			return "null";
-		}
-
-		return ""+ctx.getText();
 	}
 
 

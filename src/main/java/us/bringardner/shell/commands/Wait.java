@@ -7,7 +7,6 @@ import java.util.List;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Argument;
-import us.bringardner.shell.antlr.statement.JobControlStatement;
 import us.bringardner.shell.job.IJob;
 import us.bringardner.shell.job.JobManager;
 
@@ -83,7 +82,7 @@ public class Wait extends ShellCommand{
 					}
 				}
 			} else {
-				int id = JobControlStatement.parseJobSpec(jm, val);
+				int id = Jobs.parseJobSpec(jm, val);
 				IJob job = jm.getJob(id);
 				if( job!=null) {
 					jobs.add(job);

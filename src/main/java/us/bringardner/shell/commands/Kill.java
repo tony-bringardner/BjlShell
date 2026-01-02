@@ -10,7 +10,6 @@ import us.bringardner.shell.ConsoleSignal;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
 import us.bringardner.shell.antlr.Argument;
-import us.bringardner.shell.antlr.statement.JobControlStatement;
 import us.bringardner.shell.job.IJob;
 import us.bringardner.shell.job.JobManager;
 
@@ -74,7 +73,7 @@ public class Kill extends ShellCommand{
 				if( val.equals("%")) {
 					val+=args[++idx].getValue(ctx);
 				}
-				int id = JobControlStatement.parseJobSpec(jm, val);
+				int id = Jobs.parseJobSpec(jm, val);
 				IJob job = jm.getJob(id);
 				if( job==null) {
 					ctx.stderr.println("kill: ("+val+") - No such process");

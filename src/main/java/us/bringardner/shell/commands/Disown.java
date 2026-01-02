@@ -7,7 +7,6 @@ import java.util.List;
 import us.bringardner.shell.ConsoleSignal;
 import us.bringardner.shell.ShellCommand;
 import us.bringardner.shell.ShellContext;
-import us.bringardner.shell.antlr.statement.JobControlStatement;
 import us.bringardner.shell.job.IJob;
 import us.bringardner.shell.job.JobManager;
 import us.bringardner.shell.job.JobState;
@@ -50,7 +49,7 @@ public class Disown extends ShellCommand{
 		List<IJob> jobs = new ArrayList<>();
 		if( ops.paths.size()>0) {
 			for(String val : ops.paths) {
-				int id = JobControlStatement.parseJobSpec(jm, val);
+				int id = Jobs.parseJobSpec(jm, val);
 				IJob job = jm.getJob(id);
 				if( job!=null ) {
 					if( !jobs.contains(job)) {
