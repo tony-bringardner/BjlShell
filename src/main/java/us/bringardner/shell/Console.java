@@ -1524,7 +1524,7 @@ delimiter
 				if( keyboardReader==null ) {
 					if( !GraphicsEnvironment.isHeadless()) {
 						ConsoleFrame ret = new ConsoleFrame(this);
-						ret.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+						//ret.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 						if( setVisible) {
 							try {
 								if( SwingUtilities.isEventDispatchThread()) {
@@ -2201,8 +2201,7 @@ delimiter
 			for(int idx=0, sz=stmts.size(); idx < sz; idx++ ) {
 				Statement	stmt = stmts.get(idx);
 				handleMetaSignal(ConsoleMetaSignal.Debug);
-				ret = stmt.process(sc);
-				sc.stderr.println("idx="+idx);
+				ret = stmt.process(sc);				
 				if( ret !=0) {
 					return ret;
 				}

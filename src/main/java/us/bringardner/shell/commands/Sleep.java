@@ -82,9 +82,7 @@ public class Sleep extends ShellCommand{
 						multiplyer = Day;
 					} else if( type.equals("M")) {
 						multiplyer = MilliSecond;
-					} else if( type.equals("-db")) {
-						debug = true;											
-					}
+					} 
 				}
 			}
 

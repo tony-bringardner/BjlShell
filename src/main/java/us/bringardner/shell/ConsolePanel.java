@@ -371,7 +371,6 @@ public class ConsolePanel extends JPanel implements KeyboardReader {
 				document.insertString(start, string, null);
 				textArea2.setCaretPosition(end);
 				lineStart = currentPos = end;
-				System.out.println("set pos ="+end);
 			} catch (BadLocationException e) {
 			}
 		}

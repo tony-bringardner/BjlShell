@@ -61,11 +61,11 @@ OR:  '||';
 ESC_AND: '\\&&';
 ESC_OR:  '\\||';
 
+JOBQUERY: '%' '?' (LETTER_OR_DIGIT|TEXT)+;
 
-
-NUMBER : ('+'|'-'|'%')? INTEGER
-    | ('+'|'-'|'%')? DECIMAL
-    ;
+NUMBER 	: INTEGER
+    	| DECIMAL
+    	;
 
 fragment EXPONENT : ('e'|'E') ('+'|'-') ? INTEGER+;
 
@@ -145,7 +145,6 @@ PLUS_EQ:'+=';
 DOT:'.';
 DOT_DOT:'..';
 PERC:'%';
-//JOBSPEC: '%'[0-9]+;
 PLUS:'+';
 STAR:'*';
 POW:'**';

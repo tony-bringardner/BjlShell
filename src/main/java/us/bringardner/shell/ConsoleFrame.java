@@ -69,6 +69,12 @@ public class ConsoleFrame extends JFrame implements KeyboardReader {
 				});				
 			}
 		});
+		try {
+			setTitle(console.getCurrentDirectory().getAbsolutePath());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

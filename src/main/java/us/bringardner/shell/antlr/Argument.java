@@ -90,6 +90,9 @@ argument:
 			ret = visit(context.arg_command_substitution(),ctx);
 		} else if(context.assignStatement()!=null ) {
 			ret = visit(context.assignStatement(),ctx);			
+		} else if(context.JOBQUERY()!=null ) {
+			ret = context.JOBQUERY().getText();			
+		
 		}  else {
 			throw new RuntimeException("Not a valid argument "+context.getText());
 		}

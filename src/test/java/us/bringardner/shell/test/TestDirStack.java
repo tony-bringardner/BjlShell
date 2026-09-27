@@ -17,6 +17,7 @@ import us.bringardner.shell.Console;
 
 /*
  * broken 
+ * TestKill
  * TestDirStack
  * TestPipeStatement
  * TestDisown

@@ -120,6 +120,7 @@ argument:
 	| ID
 	| variable
 	| PERC
+	| JOBQUERY
 	
     ;
 
